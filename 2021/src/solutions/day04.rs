@@ -105,6 +105,7 @@ pub fn part2(input: &str) -> i32 {
 }
 
 fn parse(input: &str) -> Bingo {
+    let input = input.replace("\r", ""); // remove windows carriage return for files read in from windows
     let mut input = input.split("\n\n");
 
     let numbers: Vec<i32> = input
