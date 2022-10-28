@@ -6,7 +6,6 @@ pub fn read_file(year: &str, folder: &str, day: u8) -> String {
 
     let filepath = cwd
         .join(year)
-        .join("src")
         .join(folder)
         .join(format!("day{:02}.txt", day));
 
