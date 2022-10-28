@@ -67,4 +67,3 @@ async fn make_request(config: &Config) -> Result<String, Box<dyn std::error::Err
 
     Ok(body)
 }
-//fn load_session
