@@ -3,6 +3,7 @@
 members = [
     "dlin",
     "2021",
+    "util",
 ]
 
 [workspace.dependencies]

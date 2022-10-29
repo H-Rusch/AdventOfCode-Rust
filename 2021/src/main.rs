@@ -20,12 +20,13 @@ fn main() {
     let input = read_file("2021", "inputs", day);
 
     match day {
-        1 => solve_day!(day01, &input),
-        2 => solve_day!(day02, &input),
-        3 => solve_day!(day03, &input),
-        4 => solve_day!(day04, &input),
-        5 => solve_day!(day05, &input),
-        6 => solve_day!(day06, &input),
+        //1 => solve_day!(day01, &input),
+        //2 => solve_day!(day02, &input),
+        //3 => solve_day!(day03, &input),
+        //4 => solve_day!(day04, &input),
+        //5 => solve_day!(day05, &input),
+        //6 => solve_day!(day06, &input),
+        7 => solve_day!(day07, &input),
         _ => println!("day not solved: {}", day),
     }
 }
