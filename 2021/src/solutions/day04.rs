@@ -59,7 +59,7 @@ impl Board {
         let option = self.guessed.iter()
             .find(|r| r.iter().all(|b| *b));
 
-        if let Some(_) = option {
+        if option.is_some() {
             return true;
         } else {
             // check columns
@@ -105,13 +105,13 @@ pub fn part2(input: &str) -> i32 {
 }
 
 fn parse(input: &str) -> Bingo {
-    let input = input.replace("\r", ""); // remove windows carriage return for files read in from windows
+    let input = input.replace('\r', ""); // remove windows carriage return for files read in from windows
     let mut input = input.split("\n\n");
 
     let numbers: Vec<i32> = input
         .next()
         .unwrap()
-        .split(",")
+        .split(',')
         .map(|n| n.parse().unwrap())
         .collect();
 

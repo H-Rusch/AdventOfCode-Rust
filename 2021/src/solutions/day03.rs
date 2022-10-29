@@ -5,10 +5,10 @@ pub fn part1(input: &str) -> u32 {
     let mut epsilon: u32 = 0;
     for i in 0..numbers[0].len() {
         let b = most_common_at(&numbers, i);
-        gamma = gamma << 1;
+        gamma <<= 1;
         gamma += b as u32;
 
-        epsilon = epsilon << 1;
+        epsilon <<= 1;
         epsilon += (b as u32 + 1) % 2;
     }
 
@@ -19,7 +19,7 @@ pub fn part2(input: &str) -> u32 {
     let numbers = parse(input);
 
     let oxygen = find_rating(numbers.clone(), false);
-    let co2 = find_rating(numbers.clone(), true);
+    let co2 = find_rating(numbers, true);
     
     oxygen * co2
 }
@@ -41,7 +41,7 @@ fn find_rating(mut list: Vec<Vec<u8>>, co2: bool) -> u32 {
 fn convert_to_int(v: &Vec<u8>) -> u32 {
     let mut num = 0;
     for i in v {
-        num = num << 1;
+        num <<= 1;
         num += *i as u32;
     }
 

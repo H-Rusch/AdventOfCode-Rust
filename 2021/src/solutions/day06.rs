@@ -19,17 +19,17 @@ fn day_step(arr: [u64; 9], num: usize) -> u64 {
         fishes.push_back(front);
     }
     
-    sum_fish(&fishes)
+    sum_fish(fishes)
 }
 
-fn sum_fish(list: &LinkedList<u64>) -> u64 {
-    list.iter().map(|n| *n).sum()
+fn sum_fish(list: LinkedList<u64>) -> u64 {
+    list.iter().sum()
 }
 
 fn parse(input: &str) -> [u64; 9] {
     let mut arr = [0; 9];
         
-    for n in input.trim().split(",") {
+    for n in input.trim().split(',') {
         arr[n.parse::<usize>().unwrap()] += 1;
     }
 

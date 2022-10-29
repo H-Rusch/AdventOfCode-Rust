@@ -4,7 +4,7 @@ fn convert(line: &str) -> i32 {
 
 fn parse(input: &str) -> Vec<i32> {
     input.lines()
-        .map(|l| convert(l))
+        .map(convert)
         .collect()
 }
 

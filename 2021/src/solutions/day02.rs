@@ -1,12 +1,12 @@
 fn split_to_tuple(line: &str) -> (&str, i32) {
-    let (inst, num) = line.split_once(" ").unwrap();
+    let (inst, num) = line.split_once(' ').unwrap();
 
     (inst, num.parse().unwrap())
 }
 
 fn parse(input: &str) -> Vec<(&str, i32)> {
     input.lines()
-        .map(|line| split_to_tuple(line))
+        .map(split_to_tuple)
         .collect()
 }
 
