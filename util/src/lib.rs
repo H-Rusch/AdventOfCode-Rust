@@ -19,6 +19,27 @@ pub fn median(arr: &[i32]) -> f64 {
     }
 }
 
+pub fn get_adjacent(
+    x: usize,
+    y: usize,
+    width: usize,
+    height: usize,
+) -> impl Iterator<Item = (usize, usize)> {
+    let y = y as i32;
+    let x = x as i32;
+    let width = width as i32;
+    let height = height as i32;
+    [
+        (y > 0, (x, y - 1)),
+        (x > 0, (x - 1, y)),
+        (y < height - 1, (x, y + 1)),
+        (x < width - 1, (x + 1, y)),
+    ]
+    .into_iter()
+    .filter_map(|(cond, (dx, dy))| if cond { Some((dx as usize, dy as usize)) } else { None })
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -42,5 +63,12 @@ mod tests {
 
         let arr = [10, 11, 14, 15];
         assert_eq!(median(&arr), 12.5);
+    }
+
+    #[test]
+    fn not_out_of_bounds() {
+        let i = get_adjacent(0, 5, 10, 5);
+
+        assert_eq!(2, i.count());
     }
 }
