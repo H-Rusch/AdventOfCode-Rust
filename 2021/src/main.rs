@@ -1,5 +1,7 @@
 // general structure taken and adapted from github user fspoettel at https://github.com/fspoettel/advent-of-code-2021/blob/master/src/main.rs
 
+use std::time::SystemTime;
+
 use crate::solutions::*;
 use aoc21::read_file;
 use std::env;
@@ -9,8 +11,16 @@ mod solutions;
 macro_rules! solve_day {
     ($day:path, $input:expr) => {{
         use $day::*;
-        println!("Part 1: {}", part1($input));
-        println!("Part 2: {}", part2($input));
+
+        let start = SystemTime::now();
+        let res1 = part1($input);
+        let time1 = start.elapsed().unwrap();
+
+        let start = SystemTime::now();
+        let res2 = part2($input);
+        let time2 = start.elapsed().unwrap();
+        println!("Part 1: {}\n {:?}", res1, time1);
+        println!("Part 2: {}\n {:?}", res2, time2);
     }};
 }
 
@@ -31,6 +41,7 @@ fn main() {
         9 => solve_day!(day09, &input),
         10 => solve_day!(day10, &input),
         11 => solve_day!(day11, &input),
+        12 => solve_day!(day12, &input),
         _ => println!("day not solved: {}", day),
     }
 }

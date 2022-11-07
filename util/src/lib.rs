@@ -1,3 +1,4 @@
+// numbers
 pub fn triangular(n: u32) -> u32 {
     n * (n + 1) / 2
 }
@@ -19,6 +20,7 @@ pub fn median(arr: &[i32]) -> f64 {
     }
 }
 
+// coordinates
 pub fn get_adjacent(
     x: usize,
     y: usize,
@@ -73,6 +75,11 @@ pub fn get_adjacent_with_diag(
             None
         }
     })
+}
+
+// strings
+pub fn is_lowercase(s: &str) -> bool {
+    s.chars().all(char::is_lowercase)
 }
 
 #[cfg(test)]
