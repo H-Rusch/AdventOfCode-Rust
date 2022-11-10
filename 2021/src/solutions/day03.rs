@@ -58,11 +58,7 @@ fn most_common_at(list: &Vec<Vec<u8>>, pos: usize) -> u8 {
         .filter(|&b| b == 1)
         .count() as f64;
 
-    if count >= list.len() as f64 / 2.0 {
-        1
-    } else {
-        0
-    }
+    u8::from(count >= list.len() as f64 / 2.0)
 }
 
 fn parse(input: &str) -> Vec<Vec<u8>> {
