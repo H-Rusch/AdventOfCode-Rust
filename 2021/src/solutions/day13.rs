@@ -87,12 +87,12 @@ mod tests {
 
     #[test]
     fn coordinate_fold() {
-        let c1 = (12, 6);
-        let fold1 = Fold { axis: "x", num: 4 };
+        let c = (12, 6);
+        let fold1 = Fold { axis: "x", num: 14 };
         let fold2 = Fold { axis: "x", num: 8 };
 
-        assert_eq!(do_fold(&c1, &fold1), (12, 2));
-        assert_eq!(do_fold(&c1, &fold2), (12, 6));
+        assert_eq!(do_fold(&c, &fold1), (12, 6));
+        assert_eq!(do_fold(&c, &fold2), (4, 6));
     }
 
     #[test]
