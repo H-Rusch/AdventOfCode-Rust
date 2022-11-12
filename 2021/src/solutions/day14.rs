@@ -46,6 +46,7 @@ type ComplexReturn = (
 );
 
 fn parse(input: &str) -> ComplexReturn {
+    let input = input.replace('\r', "");
     let (polymer, transformations) = input.split_once("\n\n").unwrap();
 
     let polymer_map =

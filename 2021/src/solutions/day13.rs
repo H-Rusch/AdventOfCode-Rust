@@ -2,8 +2,8 @@ use regex::Regex;
 use std::collections::HashSet;
 
 #[derive(Debug)]
-struct Fold<'a> {
-    axis: &'a str,
+struct Fold {
+    axis: String,
     num: u32,
 }
 
@@ -57,6 +57,7 @@ fn do_fold(coord: &(u32, u32), fold: &Fold) -> (u32, u32) {
 }
 
 fn parse(input: &str) -> (HashSet<(u32, u32)>, Vec<Fold>) {
+    let input = input.replace('\r', "");
     let (points, instructions) = input.split_once("\n\n").unwrap();
 
     let points: HashSet<(u32, u32)> = points
@@ -71,7 +72,7 @@ fn parse(input: &str) -> (HashSet<(u32, u32)>, Vec<Fold>) {
         .map(|line| fold_regex.captures(line).unwrap())
         .map(|caps| {
             (
-                caps.get(1).unwrap().as_str(),
+                caps.get(1).unwrap().as_str().to_string(),
                 caps[2].parse::<u32>().unwrap(),
             )
         })
@@ -88,8 +89,8 @@ mod tests {
     #[test]
     fn coordinate_fold() {
         let c = (12, 6);
-        let fold1 = Fold { axis: "x", num: 14 };
-        let fold2 = Fold { axis: "x", num: 8 };
+        let fold1 = Fold { axis: "x".to_string(), num: 14 };
+        let fold2 = Fold { axis: "x".to_string(), num: 8 };
 
         assert_eq!(do_fold(&c, &fold1), (12, 6));
         assert_eq!(do_fold(&c, &fold2), (4, 6));
