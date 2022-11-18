@@ -15,11 +15,11 @@ macro_rules! solve_day {
         let start = SystemTime::now();
         let res1 = part1($input);
         let time1 = start.elapsed().unwrap();
+        println!("Part 1: {}\n {:?}", res1, time1);
 
         let start = SystemTime::now();
         let res2 = part2($input);
         let time2 = start.elapsed().unwrap();
-        println!("Part 1: {}\n {:?}", res1, time1);
         println!("Part 2: {}\n {:?}", res2, time2);
     }};
 }
