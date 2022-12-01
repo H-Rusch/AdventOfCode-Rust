@@ -1,3 +1,5 @@
+pub mod dlin;
+
 // numbers
 pub fn triangular(n: u32) -> u32 {
     n * (n + 1) / 2

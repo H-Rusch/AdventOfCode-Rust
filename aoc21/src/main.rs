@@ -1,9 +1,8 @@
 // general structure taken and adapted from github user fspoettel at https://github.com/fspoettel/advent-of-code-2021/blob/master/src/main.rs
 
-use std::time::SystemTime;
+use std::{time::SystemTime, process};
 
 use crate::solutions::*;
-use aoc21::read_file;
 use std::env;
 
 mod solutions;
@@ -27,7 +26,14 @@ macro_rules! solve_day {
 fn main() {
     let args: Vec<String> = env::args().collect();
     let day: u8 = args[1].clone().parse().unwrap();
-    let input = read_file("2021", "inputs", day);
+
+    let input = match util::dlin::read_input("aoc21", "inputs", "2021", day) {
+        Ok(text) => text,
+        Err(e) => {
+            eprintln!("Error: {:?}", e);
+            process::exit(1);
+        },
+    };
 
     match day {
         1 => solve_day!(day01, &input),
@@ -49,6 +55,7 @@ fn main() {
         17 => solve_day!(day17, &input),
         20 => solve_day!(day20, &input),
         21 => solve_day!(day21, &input),
+        24 => solve_day!(day24, &input),
         _ => println!("day not solved: {}", day),
     }
 }

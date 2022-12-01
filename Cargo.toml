@@ -1,8 +1,8 @@
 [workspace]
 
 members = [
-    "dlin",
-    "2021",
+    "aoc21",
+    "aoc22",
     "util",
 ]
 
