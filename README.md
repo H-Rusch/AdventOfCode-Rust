@@ -1,8 +1,9 @@
 # Advent of Code
-Solutions for the Advent of Code in Rust to help learning the language.
+Solutions for the Advent of Code on my journey of learning the Rust programming language.
 
-To run a day in a specific year execute `cargo run <crate_name> -- <day>` wher `<crate_name>` is the name of the specific years crate as specified in the `Cargo.toml`.
+To run a day in a specific year execute `cargo run <crate_name> -- <day>` where `<crate_name>` is the name of the specific years crate as specified in the `Cargo.toml`.
 
-Inputs can be downloaded automatically. To do this execute `cargo run dlin -- <folder> <day>` where `<folder>` is the name for the folder for a specific year.
+Inputs are autmatically downloaded the first time a problem is executed. The program will not make an attempt to download the input again after caching it.
 
 - [2021](https://adventofcode.com/2021)
+- [2022](https://adventofcode.com/2022)
