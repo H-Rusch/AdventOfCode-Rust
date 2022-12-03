@@ -50,7 +50,7 @@ fn make_path_buf(aoc_folder: &str, input_folder: &str, day: &str) -> PathBuf {
         .unwrap()
         .join(aoc_folder)
         .join(input_folder)
-        .join(format!("day{:02}.txt", day))
+        .join(format!("day{:0>2}.txt", day))
 }
 
 fn download_if_needed(path: &PathBuf, config: &Config) -> Result<String, Box<dyn error::Error>> {
