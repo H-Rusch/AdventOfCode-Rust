@@ -95,7 +95,7 @@ pub fn part2(input: &str) -> usize {
         .sum()
 }
 
-pub fn parse(input: &str) -> Vec<(&str, &str)> {
+fn parse(input: &str) -> Vec<(&str, &str)> {
     input
         .trim()
         .lines()

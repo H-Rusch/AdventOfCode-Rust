@@ -11,7 +11,7 @@ pub fn part2(input: &str) -> usize {
     loads.iter().rev().take(3).sum()
 }
 
-pub fn parse(input: &str) -> Vec<usize> {
+fn parse(input: &str) -> Vec<usize> {
     input
         .split("\n\n")
         .map(|batch| {

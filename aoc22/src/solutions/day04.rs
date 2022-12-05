@@ -38,7 +38,7 @@ pub fn part2(input: &str) -> usize {
         .count()
 }
 
-pub fn parse(input: &str) -> Vec<(RangeInclusive<u32>, RangeInclusive<u32>)> {
+fn parse(input: &str) -> Vec<(RangeInclusive<u32>, RangeInclusive<u32>)> {
     let number_regex = Regex::new(r"(\d+)-(\d+),(\d+)-(\d+)").unwrap();
 
     input
