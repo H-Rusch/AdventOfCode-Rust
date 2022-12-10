@@ -19,7 +19,7 @@ pub fn part1(input: &str) -> usize {
 }
 
 pub fn part2(input: &str) -> usize {
-    let mut knot_positions = [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)];
+    let mut knot_positions = [(0, 0); 10];
 
     let instructions = parse(input);
     let mut tail_positions: HashSet<(i32, i32)> = HashSet::from([knot_positions[9]]); 
@@ -59,8 +59,6 @@ fn change_knot_position(head_pos: &(i32, i32), tail_pos: &mut (i32, i32)) {
 
     *tail_pos = (tail_pos.0 + change_x, tail_pos.1 + change_y);
 }
-
-
 
 fn parse(input: &str) -> Vec<(char, i32)> {
     input.lines()
