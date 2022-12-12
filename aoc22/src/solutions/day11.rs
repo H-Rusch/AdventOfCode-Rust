@@ -1,8 +1,14 @@
 use std::{cell::RefCell, collections::VecDeque};
 
-struct Monkey<'a> {
+enum Op {
+    Square,
+    Add(u64),
+    Mult(u64),
+}
+
+struct Monkey {
     items: RefCell<VecDeque<u64>>,
-    operation: (&'a str, &'a str),
+    operation: Op,
     divisor: u64,
     throw_true: usize,
     throw_false: usize,
@@ -10,15 +16,15 @@ struct Monkey<'a> {
     worry_relief: Box<dyn Fn(u64) -> u64>,
 }
 
-impl<'a> Monkey<'a> {
+impl Monkey {
     fn new(
         items: VecDeque<u64>,
-        operation: (&'a str, &'a str),
+        operation: Op,
         divisor: u64,
         throw_true: usize,
         throw_false: usize,
         worry_relief: fn(u64) -> u64,
-    ) -> Monkey<'a> {
+    ) -> Monkey {
         Monkey {
             items: RefCell::new(items),
             operation,
@@ -47,11 +53,9 @@ impl<'a> Monkey<'a> {
 
     fn calc_worry_level(&self, value: u64) -> u64 {
         match self.operation {
-            ("*", "old") => value * value,
-            ("+", "old") => value + value,
-            ("*", num) => value * num.parse::<u64>().unwrap(),
-            ("+", num) => value + num.parse::<u64>().unwrap(),
-            _ => unreachable!(),
+            Op::Square => value * value,
+            Op::Add(n) => value + n,
+            Op::Mult(n) => value * n, 
         }
     }
 }
@@ -72,7 +76,6 @@ pub fn part2(input: &str) -> usize {
         monkey.worry_relief = Box::new(move |x: u64| x % divisor_prod);
     }
 
-    println!("{divisor_prod}");
     perform_iteration(10_000, &monkeys);
 
     calc_monkey_business(&mut monkeys)
@@ -120,6 +123,13 @@ fn parse(input: &str) -> Vec<Monkey> {
                 .unwrap()
                 .split_once(' ')
                 .unwrap();
+            let operation = match operation {
+                    ("*", "old") => Op::Square,
+                    //("+", "old") => value + value,
+                    ("*", num) => Op::Mult(num.parse().unwrap()),
+                    ("+", num) => Op::Add(num.parse().unwrap()),
+                    _ => unreachable!(),
+            };
             // divisor
             let divisor: u64 = lines
                 .next()
