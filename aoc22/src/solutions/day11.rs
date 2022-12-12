@@ -1,12 +1,12 @@
-use std::collections::{HashMap, VecDeque};
+use std::{cell::RefCell, collections::VecDeque};
 
 struct Monkey<'a> {
-    items: VecDeque<u64>,
+    items: RefCell<VecDeque<u64>>,
     operation: (&'a str, &'a str),
     divisor: u64,
     throw_true: usize,
     throw_false: usize,
-    throw_count: usize,
+    throw_count: RefCell<usize>,
     worry_relief: Box<dyn Fn(u64) -> u64>,
 }
 
@@ -20,39 +20,29 @@ impl<'a> Monkey<'a> {
         worry_relief: fn(u64) -> u64,
     ) -> Monkey<'a> {
         Monkey {
-            items,
+            items: RefCell::new(items),
             operation,
             divisor,
             throw_true,
             throw_false,
-            throw_count: 0,
+            throw_count: RefCell::new(0),
             worry_relief: Box::new(worry_relief),
         }
     }
 
-    fn execute_turn(&mut self) -> HashMap<usize, VecDeque<u64>> {
-        let mut throw_to_dict: HashMap<usize, VecDeque<u64>> = HashMap::new();
+    fn execute_turn(&self, monkeys: &[Monkey]) {
+        *self.throw_count.borrow_mut() += self.items.borrow().len();
 
-        while let Some(mut item) = self.items.pop_front() {
+        while let Some(mut item) = self.items.borrow_mut().pop_front() {
             item = self.calc_worry_level(item);
             item = (self.worry_relief)(item);
 
             if item % self.divisor == 0 {
-                throw_to_dict
-                    .entry(self.throw_true)
-                    .or_default()
-                    .push_back(item);
+                monkeys[self.throw_true].items.borrow_mut().push_back(item);
             } else {
-                throw_to_dict
-                    .entry(self.throw_false)
-                    .or_default()
-                    .push_back(item);
+                monkeys[self.throw_false].items.borrow_mut().push_back(item);
             }
-
-            self.throw_count += 1;
         }
-
-        throw_to_dict
     }
 
     fn calc_worry_level(&self, value: u64) -> u64 {
@@ -69,7 +59,7 @@ impl<'a> Monkey<'a> {
 pub fn part1(input: &str) -> usize {
     let mut monkeys = parse(input);
 
-    perform_iteration(20, &mut monkeys);
+    perform_iteration(20, &monkeys);
 
     calc_monkey_business(&mut monkeys)
 }
@@ -82,30 +72,27 @@ pub fn part2(input: &str) -> usize {
         monkey.worry_relief = Box::new(move |x: u64| x % divisor_prod);
     }
 
-    perform_iteration(10_000, &mut monkeys);
+    println!("{divisor_prod}");
+    perform_iteration(10_000, &monkeys);
 
     calc_monkey_business(&mut monkeys)
 }
 
-fn perform_iteration(limit: usize, monkeys: &mut Vec<Monkey>) {
+fn perform_iteration(limit: usize, monkeys: &Vec<Monkey>) {
     for _ in 0..limit {
         for i in 0..monkeys.len() {
-            let throws = monkeys[i].execute_turn();
-
-            for (idx, items) in throws {
-                monkeys[idx].items.extend(items.iter());
-            }
+            monkeys[i].execute_turn(monkeys);
         }
     }
 }
 
 fn calc_monkey_business(monkeys: &mut [Monkey]) -> usize {
-    monkeys.sort_by_key(|monkey| monkey.throw_count);
+    monkeys.sort_by_key(|monkey| *monkey.throw_count.borrow());
     monkeys
         .iter()
         .rev()
         .take(2)
-        .map(|monkey| monkey.throw_count)
+        .map(|monkey| *monkey.throw_count.borrow())
         .product()
 }
 
