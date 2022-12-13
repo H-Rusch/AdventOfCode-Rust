@@ -67,24 +67,16 @@ impl Ord for Packet {
         match (self, other) {
             (Packet::Value(v1), Packet::Value(v2)) => v1.cmp(v2),
             (Packet::List(l1), Packet::List(l2)) => {
-                let mut l1_iter = l1.iter();
-                let mut l2_iter = l2.iter();
-
-                loop {
-                    let item1 = l1_iter.next();
-                    let item2 = l2_iter.next();
-
-                    let ordering = match (item1, item2) {
-                        (Some(p1), Some(p2)) => p1.cmp(p2),
-                        (None, Some(_)) => return Ordering::Less,
-                        (Some(_), None) => return Ordering::Greater,
-                        (None, None) => return Ordering::Equal,
-                    };
-
-                    if ordering != Ordering::Equal {
-                        return ordering;
+                let mut values = l1.iter().zip(l2.iter());
+  
+                while let Some((packet1, packet2)) = values.next() {
+                    let comparison = packet1.cmp(packet2);
+                    if comparison != Ordering::Equal {
+                        return comparison;
                     }
                 }
+
+                l1.len().cmp(&l2.len())
             }
             (Packet::List(_), Packet::Value(value)) => {
                 self.cmp(&Packet::List(vec![Packet::Value(*value)]))
