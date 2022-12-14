@@ -14,4 +14,4 @@ Cargo.lock
 samplecode.txt
 sample_code.txt
 
-**/inputs/**
+**/inputs/*.txt
