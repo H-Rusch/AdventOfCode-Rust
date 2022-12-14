@@ -12,3 +12,6 @@ Cargo.lock
 .env
 
 samplecode.txt
+sample_code.txt
+
+**/inputs/**
