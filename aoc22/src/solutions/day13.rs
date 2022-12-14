@@ -67,9 +67,7 @@ impl Ord for Packet {
         match (self, other) {
             (Packet::Value(v1), Packet::Value(v2)) => v1.cmp(v2),
             (Packet::List(l1), Packet::List(l2)) => {
-                let mut values = l1.iter().zip(l2.iter());
-  
-                while let Some((packet1, packet2)) = values.next() {
+                for (packet1, packet2) in l1.iter().zip(l2.iter()) {
                     let comparison = packet1.cmp(packet2);
                     if comparison != Ordering::Equal {
                         return comparison;
