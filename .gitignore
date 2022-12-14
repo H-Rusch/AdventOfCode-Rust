@@ -15,3 +15,6 @@ samplecode.txt
 sample_code.txt
 
 **/inputs/*.txt
+
+# !keep empty inputs folder
+!**/inputs/.gitkeep 
