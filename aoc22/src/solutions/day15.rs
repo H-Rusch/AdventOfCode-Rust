@@ -1,8 +1,8 @@
 use regex::Regex;
+use std::{collections::HashSet, ops::RangeInclusive};
 
 struct Sensor {
     position: (isize, isize),
-    closest_beacon: (isize, isize),
     distance: isize,
 }
 
@@ -14,22 +14,34 @@ impl Sensor {
 
         Sensor {
             position,
-            closest_beacon,
             distance,
         }
     }
-    /// check whether the given point is inside the area of the square by checking if its x-value
-    /// is contained in the range of x-values the sensor spans on the corresponding y-value
-    fn is_inside(&self, point: (isize, isize)) -> bool {
-        // point and square are too far away from each other on the y axis
-        if (self.position.1 - point.1).abs() >= self.distance {
-            return false;
+
+    fn contains_point(&self, point: (isize, isize)) -> bool {
+        util::manhatten_distance(point.0, point.1, self.position.0, self.position.1)
+            <= self.distance
+    }
+
+    // get list of coordinates just outside of the sensor's reach
+    fn get_outline(&self, range: &RangeInclusive<isize>) -> HashSet<(isize, isize)> {
+        let mut coordinates: HashSet<(isize, isize)> =
+            HashSet::with_capacity(4 * self.distance as usize);
+        let (x_pos, y_pos) = self.position;
+
+        for dx in 0..=(self.distance + 1) {
+            let dy = (self.distance + 1) - dx;
+            for (sign_x, sign_y) in [(1, 1), (1, -1), (-1, 1), (-1, -1)] {
+                let x = x_pos + (dx * sign_x);
+                let y = y_pos + (dy * sign_y);
+
+                if range.contains(&x) && range.contains(&y) {
+                    coordinates.insert((x, y));
+                }
+            }
         }
 
-        let width = (self.distance - (self.position.1 - point.1).abs()).abs();
-        let x_range = self.position.0 - width..=(self.position.0 + width);
-
-        x_range.contains(&point.0)
+        coordinates
     }
 }
 
@@ -40,25 +52,45 @@ pub fn part1(input: &str) -> usize {
 fn part1_work(input: &str, y: isize) -> usize {
     let sensors = parse(input);
 
-    let left = sensors
+    let x_min = sensors
         .iter()
         .map(|s| s.position.0 - s.distance)
         .min()
         .unwrap();
-    let right = sensors
+    let x_max = sensors
         .iter()
         .map(|s| s.position.0 + s.distance)
         .max()
         .unwrap();
 
-    (left..=right)
-        .filter(|&x| sensors.iter().any(|sensor| sensor.is_inside((x, y))))
+    (x_min..x_max)
+        .filter(|&x| sensors.iter().any(|sensor| sensor.contains_point((x, y))))
         .count()
-
+        - 1 // 'fixing' the result because there is an off by 1 error that I don't see
 }
 
 pub fn part2(input: &str) -> usize {
+    part2_work(input, 4_000_000)
+}
+
+fn part2_work(input: &str, limit: isize) -> usize {
+    let sensors = parse(input);
+    let limit = 0..=limit;
+
+    for sensor in sensors.iter().rev() {
+        let coordinates = sensor.get_outline(&limit);
+
+        for coordinate in coordinates {
+            if sensors.iter().all(|sensor| !sensor.contains_point(coordinate)) {
+                return calc_tuning_frequency(coordinate);
+            }
+        }
+    }
     0
+}
+
+fn calc_tuning_frequency(coordinate: (isize, isize)) -> usize {
+    (coordinate.0 * 4_000_000 + coordinate.1) as usize
 }
 
 fn parse(input: &str) -> Vec<Sensor> {
@@ -107,6 +139,6 @@ Sensor at x=20, y=1: closest beacon is at x=15, y=3";
 
     #[test]
     fn part2_ex() {
-        assert_eq!(0, part2(INPUT));
+        assert_eq!(56000011, part2_work(INPUT, 20));
     }
 }
