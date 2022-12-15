@@ -1,5 +1,7 @@
 pub mod dlin;
 
+use num_traits::PrimInt;
+
 // numbers
 pub fn triangular(n: u32) -> u32 {
     n * (n + 1) / 2
@@ -20,6 +22,10 @@ pub fn median(arr: &[i32]) -> f64 {
     } else {
         sorted[mid] as f64
     }
+}
+
+pub fn manhatten_distance<T: PrimInt + num_traits::Signed>(x1: T, y1: T, x2: T, y2: T) -> T {
+    (x1 - x2).abs() + (y1 - y2).abs()
 }
 
 // coordinates
@@ -87,6 +93,12 @@ pub fn is_lowercase(s: &str) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn manhatten_distance_test() {
+        assert_eq!(26, manhatten_distance(2, 3, 15, 16));
+        assert_eq!(3378415, manhatten_distance(-1242, 2488142, 888815, -216));
+    }
 
     #[test]
     fn triangular_test() {
