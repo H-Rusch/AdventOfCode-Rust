@@ -112,9 +112,7 @@ fn parse(input: &str) -> HashMap<(i32, i32), Tile> {
 mod tests {
     use super::*;
 
-    const INPUT: &str = "\
-498,4 -> 498,6 -> 496,6
-503,4 -> 502,4 -> 502,9 -> 494,9";
+    const INPUT: &str = include_str!("../../examples/day14.txt");
 
     #[test]
     fn part1_ex() {

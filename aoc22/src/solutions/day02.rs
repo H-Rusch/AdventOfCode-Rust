@@ -107,10 +107,7 @@ fn parse(input: &str) -> Vec<(&str, &str)> {
 mod tests {
     use super::*;
 
-    const INPUT: &str = "\
-A Y
-B X
-C Z";
+    const INPUT: &str = include_str!("../../examples/day02.txt");
 
     #[test]
     fn part1_ex() {

@@ -43,13 +43,7 @@ fn get_priority(item: &char) -> usize {
 mod tests {
     use super::*;
 
-    const INPUT: &str = "\
-vJrwpWtwJgWrhcsFMMfFFhFp
-jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
-PmmdzqPrVvPwwTWBwg
-wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
-ttgJtRGJQctTZtZT
-CrZsJsPPZsGzwwsLwLmpwMDw";
+    const INPUT: &str = include_str!("../../examples/day03.txt");
 
     #[test]
     fn part1_ex() {
