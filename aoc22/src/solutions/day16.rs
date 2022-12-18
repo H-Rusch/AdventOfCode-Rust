@@ -20,17 +20,7 @@ pub fn part1(input: &str) -> u32 {
         .collect();
     let mut cache = HashMap::new();
 
-    dfs(
-        "AA",
-        1,
-        0,
-        0,
-        30,
-        &navigation_map,
-        &valves,
-        &opened,
-        &mut cache,
-    )
+    dfs("AA", 1, 0, 0, 30, &navigation_map, &valves, &opened, &mut cache)
 }
 
 pub fn part2(_input: &str) -> usize {
