@@ -10,7 +10,7 @@ pub fn part1(input: &str) -> usize {
         .iter()
         .map(|&(x, y, z)| {
             let adjacent_count = get_adjacent_to_cube(x, y, z)
-                .filter(|adj_coordinate| coordinates.contains(&adj_coordinate))
+                .filter(|adj| coordinates.contains(adj))
                 .count();
             6 - adjacent_count
         })
@@ -29,7 +29,7 @@ pub fn part2(input: &str) -> usize {
         .iter()
         .map(|&(x, y, z)| {
             get_adjacent_to_cube(x, y, z)
-                .filter(|adj| water_cubes.contains(&adj))
+                .filter(|adj| water_cubes.contains(adj))
                 .count()
         })
         .sum()
@@ -101,7 +101,7 @@ fn parse(input: &str) -> HashSet<(i32, i32, i32)> {
     input
         .lines()
         .map(|line| {
-            let mut num_iter = line.split(",");
+            let mut num_iter = line.split(',');
             let x = num_iter.next().unwrap().parse().unwrap();
             let y = num_iter.next().unwrap().parse().unwrap();
             let z = num_iter.next().unwrap().parse().unwrap();
