@@ -172,11 +172,11 @@ fn play_tetris(input: &str, limit: usize) -> usize {
 fn get_top_depths(tiles: &HashSet<(usize, usize)>, max_height: usize) -> [usize; WIDTH] {
     let mut vals = [max_height; WIDTH];
 
-    for x in 0..WIDTH {
+    for (x, item) in vals.iter_mut().enumerate().take(WIDTH) {
         let mut y = max_height;
         while y > 0 {
             if tiles.contains(&(x, y)) {
-                vals[x] = max_height - y;
+                *item = max_height - y;
                 break;
             }
             y -= 1;
