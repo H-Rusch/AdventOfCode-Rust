@@ -10,3 +10,4 @@ members = [
 regex = "1.6.0"
 itertools = "0.10.5"
 num-traits = "0.2.15"
+rayon = "1.6"
