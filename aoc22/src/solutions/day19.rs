@@ -90,13 +90,13 @@ fn calc_max_geodes(blueprint: &Blueprint, time_limit: u32) -> u32 {
 
         // always create new geode robot if possible
         if ore_counts.ore >= blueprint.geode_cost.0 && ore_counts.obsi >= blueprint.geode_cost.1 {
-            let mut next_ores = ore_counts.clone();
+            let mut next_ores = ore_counts;
             next_ores.ore -= blueprint.geode_cost.0;
             next_ores.obsi -= blueprint.geode_cost.1;
 
             next_ores.produce(&robot_counts);
 
-            let mut next_robots = robot_counts.clone();
+            let mut next_robots = robot_counts;
             next_robots.geode += 1;
 
             expanded.push_back((next_ores, next_robots, time + 1));
@@ -105,13 +105,13 @@ fn calc_max_geodes(blueprint: &Blueprint, time_limit: u32) -> u32 {
         // don't create another robot if the number of robots is already as high as the amount of ore which can be used in a turn
         // create obsidian 
         if robot_counts.obsi < blueprint.geode_cost.1 && ore_counts.ore >= blueprint.obsi_cost.0 && ore_counts.clay >= blueprint.obsi_cost.1 {
-            let mut next_ores = ore_counts.clone();
+            let mut next_ores = ore_counts;
             next_ores.ore -= blueprint.obsi_cost.0;
             next_ores.clay -= blueprint.obsi_cost.1;
 
             next_ores.produce(&robot_counts);
 
-            let mut next_robots = robot_counts.clone();
+            let mut next_robots = robot_counts;
             next_robots.obsi += 1;
 
             expanded.push_back((next_ores, next_robots, time + 1));
@@ -119,12 +119,12 @@ fn calc_max_geodes(blueprint: &Blueprint, time_limit: u32) -> u32 {
 
         // create clay 
         if robot_counts.clay < blueprint.obsi_cost.1 && ore_counts.ore >= blueprint.clay_cost {
-            let mut next_ores = ore_counts.clone();
+            let mut next_ores = ore_counts;
             next_ores.ore -= blueprint.clay_cost;
             
             next_ores.produce(&robot_counts);
 
-            let mut next_robots = robot_counts.clone();
+            let mut next_robots = robot_counts;
             next_robots.clay += 1;
 
             expanded.push_back((next_ores, next_robots, time + 1));
@@ -132,22 +132,22 @@ fn calc_max_geodes(blueprint: &Blueprint, time_limit: u32) -> u32 {
 
         // create ore 
         if robot_counts.ore < blueprint.max_ore_cost && ore_counts.ore >= blueprint.ore_cost {
-            let mut next_ores = ore_counts.clone();
+            let mut next_ores = ore_counts;
             next_ores.ore -= blueprint.ore_cost;
             
             next_ores.produce(&robot_counts);
 
-            let mut next_robots = robot_counts.clone();
+            let mut next_robots = robot_counts;
             next_robots.ore += 1;
 
             expanded.push_back((next_ores, next_robots, time + 1));
         }
 
         // don't produce new robots but collect the harvest
-        let mut next_ores = ore_counts.clone();
+        let mut next_ores = ore_counts;
         next_ores.produce(&robot_counts);
 
-        expanded.push_back((next_ores, robot_counts.clone(), time + 1));
+        expanded.push_back((next_ores, robot_counts, time + 1));
     }
 
     max_geodes
