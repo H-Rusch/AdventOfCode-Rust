@@ -1,3 +1,4 @@
+use core::panic;
 use std::collections::HashSet;
 
 #[derive(Debug)]
@@ -7,7 +8,7 @@ enum Instr {
     TurnRight,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 enum Direction {
     Right,
     Up,
@@ -67,6 +68,138 @@ pub fn part1(input: &str) -> i32 {
     (position.1 + 1) * 1000 + (position.0 + 1) * 4 + direction.get_score()
 }
 
+pub fn part2(input: &str) -> i32 {
+    let ((open_map, wall_map), instructions) = parse(input);
+
+    // start in left most coordinate in the top row, facing right
+    let mut position = *open_map.iter().filter(|(_, y)| *y == 0).min().unwrap();
+    let mut direction = Direction::Right;
+
+    for instruction in instructions {
+        match instruction {
+            Instr::TurnRight => direction.turn_right(),
+            Instr::TurnLeft => direction.turn_left(),
+            Instr::Walk(n) => {
+                position = take_steps_cube(
+                    position,
+                    &mut direction,
+                    n,
+                    &open_map,
+                    &wall_map,
+                );
+            }
+        }
+    }
+
+    // row and column counts start at 1
+    (position.1 + 1) * 1000 + (position.0 + 1) * 4 + direction.get_score()
+}
+
+const SIZE: i32 = 50;
+
+use Direction::*;
+
+// Take steps on the cube. Manually implemented for my personal input. NOT a general solution.
+fn take_steps_cube(
+    position: (i32, i32),
+    direction: &mut Direction,
+    n: u32,
+    open: &HashSet<(i32, i32)>,
+    walls: &HashSet<(i32, i32)>
+) -> (i32, i32) {
+    let mut current_position = position;
+    for _ in 0..n {
+        let (x, y) = current_position;
+        let mut next_position = match direction {
+            Direction::Right => (x + 1, y),
+            Direction::Up => (x, y - 1),
+            Direction::Left => (x - 1, y),
+            Direction::Down => (x, y + 1),
+        };
+
+        // early returns if the next position is on the map or if it is blocked by a wall
+        if open.contains(&next_position) {
+            current_position = next_position;
+            continue;
+        }
+        if walls.contains(&next_position) {
+            break;
+        }
+
+        let (x, y) = current_position;
+        let mut next_direction = *direction;
+        // wrap around
+        // next position is not in the open spaces and also not blocked -> wrap around and then chack if that space is blocked by a wall
+        if x == 3 * SIZE - 1 && (0..SIZE).contains(&y) && *direction == Right {
+            // A(R) -> D(L)
+            next_position = (2 * SIZE - 1, 3 * SIZE - (y % SIZE) - 1); //
+            next_direction = Left;
+        } else if (SIZE * 2..SIZE * 3).contains(&x) && y == 0 && *direction == Up {
+            // A(U) -> F(U)
+            next_position = (x % SIZE, SIZE * 4 - 1);
+        } else if (SIZE * 2..SIZE * 3).contains(&x) && y == SIZE - 1 && *direction == Down {
+            // A(D) -> C(L)
+            next_position = (SIZE * 2 - 1, SIZE + x % SIZE); //
+            next_direction = Left;
+        } else if (SIZE..SIZE * 2).contains(&x) && y == 0 && *direction == Up {
+            // B(U) -> F(R)
+            next_position = (0, 3 * SIZE + x % SIZE);
+            next_direction = Right;
+        } else if x == SIZE && (0..SIZE).contains(&y) && *direction == Left {
+            // B(L) -> E(R)
+            next_position = (0, 3 * SIZE - (y % SIZE) - 1); //
+            next_direction = Right;
+        } else if x == SIZE && (SIZE..2 * SIZE).contains(&y) && *direction == Left {
+            // C(L) -> E(D)
+            next_position = (y % SIZE, 2 * SIZE);
+            next_direction = Down;
+        } else if x == 2 * SIZE - 1 && (SIZE..2 * SIZE).contains(&y) && *direction == Right {
+            // C(R) -> A(U)
+            next_position = (2 * SIZE + y % SIZE, SIZE - 1);
+            next_direction = Up;
+        } else if x == 2 * SIZE - 1 && (2 * SIZE..3 * SIZE).contains(&y) && *direction == Right {
+            // D(R) -> A(L)
+            next_position = (3 * SIZE - 1, SIZE - (y % SIZE) - 1); //
+            next_direction = Left;
+        } else if (SIZE..2 * SIZE).contains(&x) && y == 3 * SIZE - 1 && *direction == Down {
+            // D(D) -> F(L)
+            next_position = (SIZE - 1, 3 * SIZE + x % SIZE);
+            next_direction = Left;
+        } else if x == 0 && (2 * SIZE..3 * SIZE).contains(&y) && *direction == Left {
+            // E(L) -> B(R)
+            next_position = (SIZE, SIZE - (y % SIZE) - 1); //
+            next_direction = Right;
+        } else if (0..SIZE).contains(&x) && y == 2 * SIZE && *direction == Up {
+            // E(U) -> C(R)
+            next_position = (SIZE, SIZE + x % SIZE);
+            next_direction = Right;
+        } else if 0 == x && (3 * SIZE..4 * SIZE).contains(&y) && *direction == Left {
+            // F(L) -> B(D)
+            next_position = (SIZE + y % SIZE, 0);
+            next_direction = Down;
+        } else if (0..SIZE).contains(&x) && y == 4 * SIZE - 1 && *direction == Down {
+            // F(D) -> A(D)
+            next_position = (2 * SIZE + x % SIZE, 0);
+        } else if SIZE - 1 == x && (3 * SIZE..4 * SIZE).contains(&y) && *direction == Right {
+            // F(R) -> D(U)
+            next_position = (SIZE + y % SIZE, 3 * SIZE - 1);
+            next_direction = Up;
+        } else {
+            println!("{:?}, {:?}", current_position, direction);
+            panic!("else");
+        }
+
+        if walls.contains(&next_position) {
+            break;
+        }
+
+        current_position = next_position;
+        *direction = next_direction;
+    }
+
+    current_position
+}
+
 fn take_steps(
     position: (i32, i32),
     direction: &Direction,
@@ -107,14 +240,9 @@ fn take_steps(
         }
 
         current_position = next_position;
-        // current_position = next_tile(current_position, direction, open, walls);
     }
 
     current_position
-}
-
-pub fn part2(_input: &str) -> usize {
-    0
 }
 
 type TileMaps = (HashSet<(i32, i32)>, HashSet<(i32, i32)>);
@@ -165,15 +293,10 @@ fn parse(input: &str) -> (TileMaps, Vec<Instr>) {
 mod tests {
     use super::*;
 
-    const INPUT: &str = include_str!("../../examples/day22.txt");
+    const _INPUT: &str = include_str!("../../examples/day22.txt");
 
     #[test]
     fn part1_ex() {
         assert_eq!(6032, part1(INPUT));
-    }
-
-    #[test]
-    fn part2_ex() {
-        assert_eq!(0, part2(INPUT));
     }
 }
