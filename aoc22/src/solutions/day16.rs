@@ -64,11 +64,26 @@ pub fn part2(input: &str) -> u32 {
         &mut answer,
     );
 
+    let opened_sets: HashSet<_> = answer.iter().map(|(_, set)| set).collect();
+
+    let answer: HashMap<BTreeSet<&str>, u32> = opened_sets
+        .iter()
+        .map(|set| {
+            let max_for_set = answer
+                .iter()
+                .filter(|(_, s)| s == *set)
+                .max_by_key(|(v, _)| v)
+                .unwrap().0;
+
+            ((*set).clone(), max_for_set)
+        })
+        .collect();
+
     answer
-        .into_par_iter()
-        .map(|(result, set)| {
-            let mut cache = HashMap::new();
-            let result2 = dfs(
+    .into_par_iter()
+    .map(|(set, result)| {
+        let mut cache = HashMap::new();
+        let result2 = dfs(
                 "AA",
                 1,
                 0,
