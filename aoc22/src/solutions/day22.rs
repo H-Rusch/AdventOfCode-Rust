@@ -293,7 +293,7 @@ fn parse(input: &str) -> (TileMaps, Vec<Instr>) {
 mod tests {
     use super::*;
 
-    const _INPUT: &str = include_str!("../../examples/day22.txt");
+    const INPUT: &str = include_str!("../../examples/day22.txt");
 
     #[test]
     fn part1_ex() {
