@@ -85,6 +85,30 @@ pub fn get_adjacent_with_diag(
     })
 }
 
+pub fn _get_adj_not_checking(x: i32, y: i32) -> impl Iterator<Item = (i32, i32)> {
+    [
+        (x, y - 1),
+        (x - 1, y),
+        (x + 1, y),
+        (x, y + 1),
+    ]
+    .into_iter()
+}
+
+pub fn get_all_adj_not_checking(x: i32, y: i32) -> impl Iterator<Item = (i32, i32)> {
+    [
+        (x - 1, y - 1),
+        (x, y - 1),
+        (x + 1, y - 1),
+        (x - 1, y),
+        (x + 1, y),
+        (x - 1, y + 1),
+        (x, y + 1),
+        (x + 1, y + 1),
+    ]
+    .into_iter()
+}
+
 // strings
 pub fn is_lowercase(s: &str) -> bool {
     s.chars().all(char::is_lowercase)
