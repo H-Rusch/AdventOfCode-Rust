@@ -50,7 +50,7 @@ pub fn part2(input: &str) -> u32 {
         .collect();
     let mut cache = HashSet::new();
 
-    let mut answer = HashSet::new();
+    let mut answer: HashMap<BTreeSet<&str>, u32> = HashMap::new();
     dfs2(
         "AA",
         1,
@@ -64,26 +64,11 @@ pub fn part2(input: &str) -> u32 {
         &mut answer,
     );
 
-    let opened_sets: HashSet<_> = answer.iter().map(|(_, set)| set).collect();
-
-    let answer: HashMap<BTreeSet<&str>, u32> = opened_sets
-        .iter()
-        .map(|set| {
-            let max_for_set = answer
-                .iter()
-                .filter(|(_, s)| s == *set)
-                .max_by_key(|(v, _)| v)
-                .unwrap().0;
-
-            ((*set).clone(), max_for_set)
-        })
-        .collect();
-
     answer
-    .into_par_iter()
-    .map(|(set, result)| {
-        let mut cache = HashMap::new();
-        let result2 = dfs(
+        .into_par_iter()
+        .map(|(set, result)| {
+            let mut cache = HashMap::new();
+            let result2 = dfs(
                 "AA",
                 1,
                 0,
@@ -114,12 +99,14 @@ fn dfs2<'a>(
     valves: &HashMap<&str, Valve>,
     opened: &BTreeSet<&'a str>,
     cache: &mut HashSet<(&'a str, u32, u32, u32)>,
-    end_points: &mut HashSet<(u32, BTreeSet<&'a str>)>,
+    end_points: &mut HashMap<BTreeSet<&'a str>, u32>,
 ) {
     // early return if time exceeded
     if time > limit {
         let result = released - flow_rate * time.abs_diff(limit + 1);
-        end_points.insert((result, opened.clone()));
+        let key = opened.clone();
+        let val = (*end_points.get(&key).unwrap_or(&0)).max(result);
+        end_points.insert(key, val);
         return;
     }
 
@@ -142,7 +129,9 @@ fn dfs2<'a>(
     // all valves have been opened -> wait until the time runs out
     if opened.len() == valves.len() {
         let result = released + new_flow_rate * time.abs_diff(limit + 1);
-        end_points.insert((result, opened.clone()));
+        let key = opened.clone();
+        let val = (*end_points.get(&key).unwrap_or(&0)).max(result);
+        end_points.insert(key, val);
         return;
     }
 
