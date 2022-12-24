@@ -85,7 +85,7 @@ pub fn get_adjacent_with_diag(
     })
 }
 
-pub fn _get_adj_not_checking(x: i32, y: i32) -> impl Iterator<Item = (i32, i32)> {
+pub fn get_adj_not_checking(x: i32, y: i32) -> impl Iterator<Item = (i32, i32)> {
     [
         (x, y - 1),
         (x - 1, y),
