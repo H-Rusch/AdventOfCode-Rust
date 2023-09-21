@@ -17,9 +17,9 @@ impl Config {
         let day = day.to_string();
 
         dotenv().ok();
-        let session_cookie = match std::env::var("AOC_SESSION_COOKIE") {
+        let session_cookie = match std::env::var("session") {
             Ok(val) => val,
-            Err(_) => return Err("Error reading in session cookie from .env"),
+            Err(_) => return Err("Error reading session cookie from .env. Entry 'session' not found."),
         };
 
         Ok(Config {
