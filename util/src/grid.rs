@@ -1,3 +1,5 @@
+use std::ops::Range;
+
 pub enum Direction {
     RIGHT,
     UP,
@@ -6,6 +8,16 @@ pub enum Direction {
 }
 
 impl Direction {
+    pub fn from(c: char) -> Self {
+        match c.to_ascii_uppercase() {
+            'R' => Direction::RIGHT,
+            'U' => Direction::UP,
+            'L' => Direction::LEFT,
+            'D' => Direction::DOWN,
+            _ => unreachable!(),
+        }
+    }
+
     pub fn turn_right(&self) -> Direction {
         match self {
             Direction::RIGHT => Self::DOWN,
@@ -35,31 +47,57 @@ impl Direction {
 }
 
 /// Two dimensional coordinate
-#[derive(Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Coordinate {
-    x: i32,
-    y: i32,
+    pub x: i32,
+    pub y: i32,
 }
 
 impl Coordinate {
+    pub fn from(x: i32, y: i32) -> Self {
+        Coordinate { x, y }
+    }
+
     pub fn manhatten_distance(&self, other: &Coordinate) -> u32 {
         self.x.abs_diff(other.x) + self.y.abs_diff(other.y)
     }
 
-    pub fn step(&mut self, direction: &Direction, steps: u32) {
+    pub fn step(&self, direction: &Direction, steps: u32) -> Self {
         let steps = steps as i32;
         match direction {
-            Direction::RIGHT => self.x += steps,
-            Direction::LEFT => self.x -= steps,
-            Direction::UP => self.y += steps,
-            Direction::DOWN => self.y -= steps,
+            Direction::RIGHT => Coordinate::from(self.x + steps, self.y),
+            Direction::LEFT => Coordinate::from(self.x - steps, self.y),
+            Direction::UP => Coordinate::from(self.x, self.y - steps),
+            Direction::DOWN => Coordinate::from(self.x, self.y + steps),
         }
+    }
+
+    pub fn step_in_bounds(
+        &self,
+        direction: &Direction,
+        steps: u32,
+        bounds: &Bounds,
+    ) -> Option<Self> {
+        let coordinate = self.step(&direction, steps);
+        (bounds.x_values.contains(&coordinate.x) && bounds.y_values.contains(&coordinate.y))
+            .then_some(coordinate)
     }
 }
 
 impl Default for Coordinate {
     fn default() -> Self {
         Coordinate { x: 0, y: 0 }
+    }
+}
+
+pub struct Bounds {
+    x_values: Range<i32>,
+    y_values: Range<i32>,
+}
+
+impl Bounds {
+    pub fn from(x_values: Range<i32>, y_values: Range<i32>) -> Self {
+        Bounds { x_values, y_values }
     }
 }
 
@@ -169,5 +207,42 @@ mod tests {
         assert_eq!(corner.count(), 3);
         assert_eq!(top_edge.count(), 5);
         assert_eq!(bottom_edge.count(), 5);
+    }
+
+    #[test]
+    fn stepping_inside_bounds_returns_correct_values() {
+        let coordinate = Coordinate::from(1, 1);
+        let bounds = Bounds::from(0..3, 0..3);
+
+        let next = coordinate.step_in_bounds(&Direction::UP, 1, &bounds);
+        assert!(next.is_some());
+        assert_eq!(next.unwrap(), Coordinate::from(1, 0));
+
+        let next = coordinate.step_in_bounds(&Direction::DOWN, 1, &bounds);
+        assert!(next.is_some());
+        assert_eq!(next.unwrap(), Coordinate::from(1, 2));
+        
+        let next = coordinate.step_in_bounds(&Direction::RIGHT, 1, &bounds);
+        assert!(next.is_some());
+        assert_eq!(next.unwrap(), Coordinate::from(2, 1));
+        
+        let next = coordinate.step_in_bounds(&Direction::LEFT, 1, &bounds);
+        assert!(next.is_some());
+        assert_eq!(next.unwrap(), Coordinate::from(0, 1));
+    }
+
+    #[test]
+    fn stepping_over_bounds_returns_none() {
+        let coordinate = Coordinate::from(1, 1);
+        let bounds = Bounds::from(0..3, 0..3);
+
+        let next = coordinate.step_in_bounds(&Direction::UP, 2, &bounds);
+        assert!(next.is_none());
+        let next = coordinate.step_in_bounds(&Direction::DOWN, 2, &bounds);
+        assert!(next.is_none());        
+        let next = coordinate.step_in_bounds(&Direction::RIGHT, 2, &bounds);
+        assert!(next.is_none());        
+        let next = coordinate.step_in_bounds(&Direction::LEFT, 2, &bounds);
+        assert!(next.is_none());
     }
 }

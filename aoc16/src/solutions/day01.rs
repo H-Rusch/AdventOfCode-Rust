@@ -7,7 +7,7 @@ pub fn part1(input: &str) -> u32 {
 
     for (turn, steps) in parse(input) {
         change_direction(&mut direction, turn);
-        coordinate.step(&direction, steps);
+        coordinate = coordinate.step(&direction, steps);
     }
 
     coordinate.manhatten_distance(&Coordinate::default())
@@ -22,7 +22,7 @@ pub fn part2(input: &str) -> u32 {
         change_direction(&mut direction, turn);
 
         for _ in 1..=steps {
-            coordinate.step(&direction, 1);
+            coordinate = coordinate.step(&direction, 1);
             if visited.contains(&coordinate) {
                 break 'outer;
             }
@@ -34,7 +34,7 @@ pub fn part2(input: &str) -> u32 {
 }
 
 fn change_direction(direction: &mut Direction, turn: char) {
-    *direction = match turn {
+    match turn {
         'R' => direction.turn_right(),
         'L' => direction.turn_left(),
         _ => unreachable!(),
