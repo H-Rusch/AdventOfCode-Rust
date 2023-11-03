@@ -1,9 +1,9 @@
 use dotenv::dotenv;
 use reqwest::header::COOKIE;
-use std::env;
-use std::error;
-use std::fs;
+use std::{env, error, io, fs};
 use std::path::PathBuf;
+
+const INPUT_FOLDER: &str = "inputs";
 
 struct Config {
     pub year: String,
@@ -19,7 +19,9 @@ impl Config {
         dotenv().ok();
         let session_cookie = match std::env::var("session") {
             Ok(val) => val,
-            Err(_) => return Err("Error reading session cookie from .env. Entry 'session' not found."),
+            Err(_) => {
+                return Err("Error reading session cookie from .env. Entry 'session' not found.")
+            }
         };
 
         Ok(Config {
@@ -31,45 +33,56 @@ impl Config {
 }
 
 pub fn read_input(
-    aoc_folder: &str,
-    input_folder: &str,
+    aoc_directory: &str,
     year: &str,
     day: u8,
 ) -> Result<String, Box<dyn error::Error>> {
     let day = &day.to_string();
-
     let config = Config::build(year, day)?;
 
-    let path = make_path_buf(aoc_folder, input_folder, day);
-
-    download_if_needed(&path, &config)
+    let path = build_inputs_path(aoc_directory);
+    create_inputs_dir(&path)?;
+    let path = build_day_input_path(path, day);
+    download_if_needed(&path, &config)?;
+    read_cached_file(&path)
 }
 
-fn make_path_buf(aoc_folder: &str, input_folder: &str, day: &str) -> PathBuf {
+fn build_inputs_path(aoc_directory: &str) -> PathBuf {
     env::current_dir()
         .unwrap()
-        .join(aoc_folder)
-        .join(input_folder)
-        .join(format!("day{:0>2}.txt", day))
+        .join(aoc_directory)
+        .join(INPUT_FOLDER)
 }
 
-fn download_if_needed(path: &PathBuf, config: &Config) -> Result<String, Box<dyn error::Error>> {
-    if path.try_exists()? {
-        // read content of cached file
-        match fs::read_to_string(path) {
-            Ok(t) => Ok(t),
-            Err(e) => Err(e.into()),
-        }
-    } else {
-        // download input file and return content
+fn create_inputs_dir(path: &PathBuf) -> Result<(), io::Error> {
+    if !path.try_exists()? {
+        fs::create_dir(path)?;
+    }
+
+    Ok(())
+}
+
+fn build_day_input_path(path: PathBuf, day: &str) -> PathBuf {
+    path.join(format!("day{:0>2}.txt", day))
+}
+
+fn download_if_needed(path: &PathBuf, config: &Config) -> Result<(), Box<dyn error::Error>> {
+    if !path.try_exists()? {
         let text = make_request(config)?.trim().to_string();
 
-        if text.starts_with("Puzzle inputs differ by user.  Please log in to get your puzzle input.") {
-            Err("User is currenty not logged in.".into())
-        } else {
-            fs::write(path, &text)?;
-            Ok(text)
+        if text.starts_with("Puzzle inputs differ by user.") {
+            return Err("User is currenty not logged in.".into());
         }
+        fs::write(path, &text)?;
+    }
+
+    Ok(())
+}
+
+fn read_cached_file(path: &PathBuf) -> Result<String, Box<dyn error::Error>> {
+    match fs::read_to_string(path) {
+        Ok(text) => Ok(text),
+        Err(e) => Err(e.into()),
     }
 }
 
