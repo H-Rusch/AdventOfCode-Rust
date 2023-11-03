@@ -35,7 +35,7 @@ fn iteration(elves: &HashSet<(i32, i32)>, i: u32) -> HashSet<(i32, i32)> {
     'loop_elves: for pos in elves.iter() {
         let (x, y) = *pos;
         // check all 8 adjacent positions. If all are empty do nothing.
-        if util::get_all_adj_not_checking(x, y).all(|adj| !elves.contains(&adj)) {
+        if util::grid::get_all_adj_not_checking(x, y).all(|adj| !elves.contains(&adj)) {
             new_elves.insert(*pos);
             continue;
         }

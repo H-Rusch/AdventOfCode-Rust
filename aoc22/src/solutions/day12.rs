@@ -36,7 +36,7 @@ fn find_shortest_path(x: usize, y: usize, grid: &[Vec<char>], goal: char, forwar
             return cost;
         }
 
-        for (xx, yy) in util::get_adjacent(x, y, grid[0].len(), grid.len()) {
+        for (xx, yy) in util::grid::get_adjacent(x, y, grid[0].len(), grid.len()) {
             if !visited.contains(&(xx, yy)) {
                 let adjacent_char = grid[yy][xx];
                 // forwards flag to differentiate between part 1 and part 2

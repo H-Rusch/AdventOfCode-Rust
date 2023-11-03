@@ -45,7 +45,7 @@ fn step(matrix: &mut Vec<Vec<u8>>) -> usize {
     while let Some((x, y)) = flashing.pop() {
         flashed.insert((x, y));
 
-        for (dx, dy) in util::get_adjacent_with_diag(x, y, width, height) {
+        for (dx, dy) in util::grid::get_adjacent_with_diag(x, y, width, height) {
             matrix[dy][dx] += 1;
             if matrix[dy][dx] == 10 {
                 flashing.push((dx, dy));

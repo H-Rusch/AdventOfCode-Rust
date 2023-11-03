@@ -53,7 +53,7 @@ fn lowest_risk(grid: &Vec<Vec<u32>>, goal: (usize, usize)) -> u32 {
         }
         seen.insert(pos);
 
-        for (dx, dy) in util::get_adjacent(pos.0, pos.1, width, height) {
+        for (dx, dy) in util::grid::get_adjacent(pos.0, pos.1, width, height) {
             if !seen.contains(&(dx, dy)) {
                 heap.push(State {
                     cost: cost + grid[dy][dx],

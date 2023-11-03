@@ -62,9 +62,9 @@ fn download_if_needed(path: &PathBuf, config: &Config) -> Result<String, Box<dyn
         }
     } else {
         // download input file and return content
-        let text = make_request(config)?;
+        let text = make_request(config)?.trim().to_string();
 
-        if text.trim() == "Puzzle inputs differ by user.  Please log in to get your puzzle input." {
+        if text.starts_with("Puzzle inputs differ by user.  Please log in to get your puzzle input.") {
             Err("User is currenty not logged in.".into())
         } else {
             fs::write(path, &text)?;

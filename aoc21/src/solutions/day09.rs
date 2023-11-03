@@ -34,7 +34,7 @@ fn calculate_basin_area(x: usize, y: usize, grid: &Vec<Vec<u32>>) -> u32 {
         }
         area += 1;
 
-        for (dx, dy) in util::get_adjacent(x, y, width, height) {
+        for (dx, dy) in util::grid::get_adjacent(x, y, width, height) {
             if !seen.contains(&(dx, dy)) {
                 seen.insert((dx, dy));
                 stack.push((dx, dy));
@@ -50,7 +50,7 @@ fn find_low_points(grid: &Vec<Vec<u32>>) -> Vec<(usize, usize)> {
     let width = grid[0].len();
 
     (0..width).cartesian_product(0..height)
-        .filter(|&(x, y)| util::get_adjacent(x, y, width, height).all(|(dx, dy)| grid[dy][dx] > grid[y][x]))
+        .filter(|&(x, y)| util::grid::get_adjacent(x, y, width, height).all(|(dx, dy)| grid[dy][dx] > grid[y][x]))
         .collect()
 }
 
