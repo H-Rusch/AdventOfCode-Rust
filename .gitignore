@@ -11,12 +11,12 @@ Cargo.lock
 
 .env
 
-samplecode.txt
 sample_code.txt
 
+# keep empty inputs folder
+!**/inputs/.gitkeep 
 **/inputs/*.txt
 
-# !keep empty inputs folder
-!**/inputs/.gitkeep 
-
 .DS_Store
+
+.vscode/
