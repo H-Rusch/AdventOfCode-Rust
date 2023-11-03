@@ -75,7 +75,7 @@ fn download_if_needed(path: &PathBuf, config: &Config) -> Result<String, Box<dyn
 
 #[tokio::main]
 async fn make_request(config: &Config) -> Result<String, Box<dyn error::Error>> {
-    let url = vec![
+    let url = [
         "https://adventofcode.com",
         &config.year,
         "day",

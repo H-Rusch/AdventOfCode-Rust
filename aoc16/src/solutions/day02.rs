@@ -35,7 +35,7 @@ fn build_code(
     parse(input)
         .iter()
         .map(|line| {
-            coordinate = execute_line(&keypad, line, coordinate, &bounds);
+            coordinate = execute_line(&keypad, line, coordinate, bounds);
             let (x, y) = (coordinate.x as usize, coordinate.y as usize);
             keypad[y][x]
         })
@@ -43,13 +43,13 @@ fn build_code(
 }
 
 fn execute_line(
-    keypad: &Vec<Vec<char>>,
-    line: &Vec<Direction>,
+    keypad: &[Vec<char>],
+    line: &[Direction],
     mut coordinate: Coordinate,
     bounds: &Bounds,
 ) -> Coordinate {
     for direction in line.iter() {
-        if let Some(next) = coordinate.step_in_bounds(direction, 1, &bounds) {
+        if let Some(next) = coordinate.step_in_bounds(direction, 1, bounds) {
             let (x, y) = (next.x as usize, next.y as usize);
             if keypad[y][x] != ' ' {
                 coordinate = next;

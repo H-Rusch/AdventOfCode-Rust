@@ -47,7 +47,7 @@ impl Direction {
 }
 
 /// Two dimensional coordinate
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
 pub struct Coordinate {
     pub x: i32,
     pub y: i32,
@@ -78,15 +78,9 @@ impl Coordinate {
         steps: u32,
         bounds: &Bounds,
     ) -> Option<Self> {
-        let coordinate = self.step(&direction, steps);
+        let coordinate = self.step(direction, steps);
         (bounds.x_values.contains(&coordinate.x) && bounds.y_values.contains(&coordinate.y))
             .then_some(coordinate)
-    }
-}
-
-impl Default for Coordinate {
-    fn default() -> Self {
-        Coordinate { x: 0, y: 0 }
     }
 }
 
