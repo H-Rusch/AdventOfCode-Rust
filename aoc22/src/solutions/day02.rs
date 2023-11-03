@@ -2,6 +2,7 @@ use RpsResult::*;
 use RPS::*;
 
 // Rock-Paper-Scissors
+#[allow(clippy::upper_case_acronyms)]
 enum RPS {
     Rock,
     Paper,

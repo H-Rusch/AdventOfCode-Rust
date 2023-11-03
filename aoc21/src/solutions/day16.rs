@@ -21,7 +21,7 @@ impl Packet {
 
     fn calculate(&self) -> u64 {
         match &self.payload {
-            Payload::Literal(n) => *n as u64,
+            Payload::Literal(n) => *n,
             Payload::Operator(v) => calc_subpackets(self.type_id, v),
         }
     } 

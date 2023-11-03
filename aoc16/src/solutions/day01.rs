@@ -26,7 +26,7 @@ pub fn part2(input: &str) -> u32 {
             if visited.contains(&coordinate) {
                 break 'outer;
             }
-            visited.insert(coordinate.clone());
+            visited.insert(coordinate);
         }
     }
 
