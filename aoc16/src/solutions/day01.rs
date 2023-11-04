@@ -2,7 +2,7 @@ use std::collections::HashSet;
 use util::grid::{Coordinate, Direction};
 
 pub fn part1(input: &str) -> u32 {
-    let mut direction = Direction::UP;
+    let mut direction = Direction::Up;
     let mut coordinate = Coordinate::default();
 
     for (turn, steps) in parse(input) {
@@ -14,7 +14,7 @@ pub fn part1(input: &str) -> u32 {
 }
 
 pub fn part2(input: &str) -> u32 {
-    let mut direction = Direction::RIGHT;
+    let mut direction = Direction::Right;
     let mut coordinate = Coordinate::default();
     let mut visited = HashSet::new();
 
@@ -34,7 +34,7 @@ pub fn part2(input: &str) -> u32 {
 }
 
 fn change_direction(direction: &mut Direction, turn: char) {
-    *direction = match turn {
+    match turn {
         'R' => direction.turn_right(),
         'L' => direction.turn_left(),
         _ => unreachable!(),

@@ -68,7 +68,7 @@ fn build_day_input_path(path: PathBuf, day: &str) -> PathBuf {
 
 fn download_if_needed(path: &PathBuf, config: &Config) -> Result<(), Box<dyn error::Error>> {
     if !path.try_exists()? {
-        let text = make_request(config)?.trim().to_string();
+        let text = make_request(config)?.trim_end().to_string();
 
         if text.starts_with("Puzzle inputs differ by user.") {
             return Err("User is currenty not logged in.".into());

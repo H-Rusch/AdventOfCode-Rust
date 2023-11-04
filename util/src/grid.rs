@@ -1,47 +1,48 @@
 use std::ops::Range;
 
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum Direction {
-    RIGHT,
-    UP,
-    LEFT,
-    DOWN,
+    Right,
+    Up,
+    Left,
+    Down,
 }
 
 impl Direction {
     pub fn from(c: char) -> Self {
         match c.to_ascii_uppercase() {
-            'R' => Direction::RIGHT,
-            'U' => Direction::UP,
-            'L' => Direction::LEFT,
-            'D' => Direction::DOWN,
+            'R' => Direction::Right,
+            'U' => Direction::Up,
+            'L' => Direction::Left,
+            'D' => Direction::Down,
             _ => unreachable!(),
         }
     }
 
-    pub fn turn_right(&self) -> Direction {
-        match self {
-            Direction::RIGHT => Self::DOWN,
-            Direction::DOWN => Self::LEFT,
-            Direction::LEFT => Self::UP,
-            Direction::UP => Self::RIGHT,
+    pub fn turn_right(&mut self) {
+        *self = match self {
+            Direction::Right => Self::Down,
+            Direction::Down => Self::Left,
+            Direction::Left => Self::Up,
+            Direction::Up => Self::Right,
         }
     }
 
-    pub fn turn_left(&self) -> Direction {
-        match self {
-            Direction::RIGHT => Self::UP,
-            Direction::UP => Self::LEFT,
-            Direction::LEFT => Self::DOWN,
-            Direction::DOWN => Self::RIGHT,
+    pub fn turn_left(&mut self) {
+        *self = match self {
+            Direction::Right => Self::Up,
+            Direction::Up => Self::Left,
+            Direction::Left => Self::Down,
+            Direction::Down => Self::Right,
         }
     }
 
-    pub fn turn_around(&self) -> Direction {
-        match self {
-            Direction::RIGHT => Self::LEFT,
-            Direction::LEFT => Self::RIGHT,
-            Direction::UP => Self::DOWN,
-            Direction::DOWN => Self::UP,
+    pub fn turn_around(&mut self) {
+        *self = match self {
+            Direction::Right => Self::Left,
+            Direction::Left => Self::Right,
+            Direction::Up => Self::Down,
+            Direction::Down => Self::Up,
         }
     }
 }
@@ -65,10 +66,10 @@ impl Coordinate {
     pub fn step(&self, direction: &Direction, steps: u32) -> Self {
         let steps = steps as i32;
         match direction {
-            Direction::RIGHT => Coordinate::from(self.x + steps, self.y),
-            Direction::LEFT => Coordinate::from(self.x - steps, self.y),
-            Direction::UP => Coordinate::from(self.x, self.y - steps),
-            Direction::DOWN => Coordinate::from(self.x, self.y + steps),
+            Direction::Right => Coordinate::from(self.x + steps, self.y),
+            Direction::Left => Coordinate::from(self.x - steps, self.y),
+            Direction::Up => Coordinate::from(self.x, self.y - steps),
+            Direction::Down => Coordinate::from(self.x, self.y + steps),
         }
     }
 
@@ -208,19 +209,19 @@ mod tests {
         let coordinate = Coordinate::from(1, 1);
         let bounds = Bounds::from(0..3, 0..3);
 
-        let next = coordinate.step_in_bounds(&Direction::UP, 1, &bounds);
+        let next = coordinate.step_in_bounds(&Direction::Up, 1, &bounds);
         assert!(next.is_some());
         assert_eq!(next.unwrap(), Coordinate::from(1, 0));
 
-        let next = coordinate.step_in_bounds(&Direction::DOWN, 1, &bounds);
+        let next = coordinate.step_in_bounds(&Direction::Down, 1, &bounds);
         assert!(next.is_some());
         assert_eq!(next.unwrap(), Coordinate::from(1, 2));
         
-        let next = coordinate.step_in_bounds(&Direction::RIGHT, 1, &bounds);
+        let next = coordinate.step_in_bounds(&Direction::Right, 1, &bounds);
         assert!(next.is_some());
         assert_eq!(next.unwrap(), Coordinate::from(2, 1));
         
-        let next = coordinate.step_in_bounds(&Direction::LEFT, 1, &bounds);
+        let next = coordinate.step_in_bounds(&Direction::Left, 1, &bounds);
         assert!(next.is_some());
         assert_eq!(next.unwrap(), Coordinate::from(0, 1));
     }
@@ -230,13 +231,13 @@ mod tests {
         let coordinate = Coordinate::from(1, 1);
         let bounds = Bounds::from(0..3, 0..3);
 
-        let next = coordinate.step_in_bounds(&Direction::UP, 2, &bounds);
+        let next = coordinate.step_in_bounds(&Direction::Up, 2, &bounds);
         assert!(next.is_none());
-        let next = coordinate.step_in_bounds(&Direction::DOWN, 2, &bounds);
+        let next = coordinate.step_in_bounds(&Direction::Down, 2, &bounds);
         assert!(next.is_none());        
-        let next = coordinate.step_in_bounds(&Direction::RIGHT, 2, &bounds);
+        let next = coordinate.step_in_bounds(&Direction::Right, 2, &bounds);
         assert!(next.is_none());        
-        let next = coordinate.step_in_bounds(&Direction::LEFT, 2, &bounds);
+        let next = coordinate.step_in_bounds(&Direction::Left, 2, &bounds);
         assert!(next.is_none());
     }
 }
