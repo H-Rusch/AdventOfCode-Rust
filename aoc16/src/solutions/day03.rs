@@ -15,6 +15,8 @@ pub fn part2(input: &str) -> usize {
 fn is_valid_triangle(values: &[u32]) -> bool {
     let sum: u32 = values.iter().sum();
 
+    // as 'value' is always just a part of 'sum', this operation can not lead to an underflow 
+    #[allow(clippy::overflow_check_conditional)]
     values.iter().all(|&value| sum - value > value)
 }
 
