@@ -34,7 +34,7 @@ pub fn part2(input: &str) -> u32 {
 }
 
 fn change_direction(direction: &mut Direction, turn: char) {
-    match turn {
+    *direction = match turn {
         'R' => direction.turn_right(),
         'L' => direction.turn_left(),
         _ => unreachable!(),
