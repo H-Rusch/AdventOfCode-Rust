@@ -45,7 +45,7 @@ pub fn part2(input: &str) -> usize {
 }
 
 fn generate_goal(floors: &[HashSet<i32>]) -> HashSet<i32> {
-    floors.iter().flatten().map(|i| *i).collect()
+    floors.iter().flatten().copied().collect()
 }
 
 fn solve(floors: Vec<HashSet<i32>>, goal: HashSet<i32>) -> usize {
@@ -53,7 +53,6 @@ fn solve(floors: Vec<HashSet<i32>>, goal: HashSet<i32>) -> usize {
     let mut visited = HashSet::new();
 
     while let Some((step, state)) = queue.pop_front() {
-        //println!("{:?}", state.floors);
         if state.floors[state.floors.len() - 1] == goal {
             return step;
         }
@@ -86,13 +85,13 @@ fn next_states(state: &State) -> Vec<State> {
 
         if level != 0 {
             let next_level = level - 1;
-            if let Some(next_floors) = build_next_floors(&state, next_level, &taken_items) {
+            if let Some(next_floors) = build_next_floors(state, next_level, &taken_items) {
                 result.push(State::from(next_level, next_floors));
             }
         }
         if level != state.floors.len() - 1 {
             let next_level = level + 1;
-            if let Some(next_floors) = build_next_floors(&state, next_level, &taken_items) {
+            if let Some(next_floors) = build_next_floors(state, next_level, &taken_items) {
                 result.push(State::from(next_level, next_floors));
             }
         }
