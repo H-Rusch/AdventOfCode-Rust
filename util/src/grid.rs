@@ -83,6 +83,18 @@ impl Coordinate {
         (bounds.x_values.contains(&coordinate.x) && bounds.y_values.contains(&coordinate.y))
             .then_some(coordinate)
     }
+
+    pub fn get_adjacent(&self) -> Vec<Coordinate> {
+        [
+            Direction::Right,
+            Direction::Down,
+            Direction::Up,
+            Direction::Left,
+        ]
+        .iter()
+        .map(|direction| self.step(direction, 1))
+        .collect()
+    }
 }
 
 pub struct Bounds {
@@ -216,11 +228,11 @@ mod tests {
         let next = coordinate.step_in_bounds(&Direction::Down, 1, &bounds);
         assert!(next.is_some());
         assert_eq!(next.unwrap(), Coordinate::from(1, 2));
-        
+
         let next = coordinate.step_in_bounds(&Direction::Right, 1, &bounds);
         assert!(next.is_some());
         assert_eq!(next.unwrap(), Coordinate::from(2, 1));
-        
+
         let next = coordinate.step_in_bounds(&Direction::Left, 1, &bounds);
         assert!(next.is_some());
         assert_eq!(next.unwrap(), Coordinate::from(0, 1));
@@ -234,9 +246,9 @@ mod tests {
         let next = coordinate.step_in_bounds(&Direction::Up, 2, &bounds);
         assert!(next.is_none());
         let next = coordinate.step_in_bounds(&Direction::Down, 2, &bounds);
-        assert!(next.is_none());        
+        assert!(next.is_none());
         let next = coordinate.step_in_bounds(&Direction::Right, 2, &bounds);
-        assert!(next.is_none());        
+        assert!(next.is_none());
         let next = coordinate.step_in_bounds(&Direction::Left, 2, &bounds);
         assert!(next.is_none());
     }
