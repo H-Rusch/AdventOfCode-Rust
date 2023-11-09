@@ -42,11 +42,7 @@ fn extend_data(a: &str) -> String {
 fn generate_checksum(data: &str, limit: usize) -> String {
     let mut result = String::with_capacity(data.len() / 2);
     data.chars().take(limit).tuples().for_each(|(c1, c2)| {
-        let ch = match (c1, c2) {
-            ('1', '1') | ('0', '0') => '1',
-            ('0', '1') | ('1', '0') => '0',
-            _ => unreachable!(),
-        };
+        let ch = if c1 == c2 { '1' } else { '0' };
         result.push(ch);
     });
 
