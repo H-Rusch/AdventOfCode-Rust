@@ -1,7 +1,3 @@
-use std::ops::RangeInclusive;
-
-use rayon::prelude::*;
-
 pub fn part1(input: &str) -> u32 {
     let ranges = parse(input);
     find_lowest_matching(&ranges).unwrap()
@@ -12,50 +8,48 @@ pub fn part2(input: &str) -> usize {
     count_allowed(&ranges)
 }
 
-fn find_lowest_matching(ranges: &[RangeInclusive<u32>]) -> Option<u32> {
-    (u32::MIN..=u32::MAX).find(|i| adress_allowed(ranges, i))
+fn find_lowest_matching(ranges: &[(u32, u32)]) -> Option<u32> {
+    let mut last_high = 0;
+
+    for &(low, high) in ranges {
+        if last_high < low {
+            return Some(last_high);
+        }
+        // panics if high == u32::MAX. But this does not happen in my case and therefore I wont handle it
+        last_high = last_high.max(high + 1);
+    }
+
+    None
 }
 
-fn adress_allowed(ranges: &[RangeInclusive<u32>], adress: &u32) -> bool {
-    !ranges.iter().any(|range| range.contains(adress))
+fn count_allowed(ranges: &[(u32, u32)]) -> usize {
+    let mut allowed_count = 0;
+    let mut last_high = 0;
+
+    for &(low, high) in ranges {
+        if last_high < low {
+            allowed_count += (low - last_high) as usize;
+        }
+
+        last_high = if high == u32::MAX {
+            u32::MAX
+        } else {
+            last_high.max(high + 1)
+        }
+    }
+
+    allowed_count + (u32::MAX - last_high) as usize
 }
 
-fn count_allowed(ranges: &[RangeInclusive<u32>]) -> usize {
-    (u32::MIN..=u32::MAX)
-        .into_par_iter()
-        .filter(|i| adress_allowed(ranges, i))
-        .count()
-}
-
-fn parse(input: &str) -> Vec<RangeInclusive<u32>> {
-    input
+fn parse(input: &str) -> Vec<(u32, u32)> {
+    let mut ranges: Vec<(u32, u32)> = input
         .lines()
         .map(|line| {
             let (low, high) = line.split_once('-').unwrap();
-            let (low, high) = (low.parse().unwrap(), high.parse().unwrap());
-
-            low..=high
+            (low.parse().unwrap(), high.parse().unwrap())
         })
-        .collect()
-}
+        .collect();
+    ranges.sort();
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    const INPUT: &str = include_str!("../../examples/day20.txt");
-
-    #[test]
-    fn adress_allowed_test() {
-        let ranges = parse(INPUT);
-
-        let allowed = [3, 9];
-        let disallowed = [0, 1, 2, 4, 5, 6, 7, 8];
-        for i in allowed {
-            assert!(adress_allowed(&ranges, &i));
-        }
-        for i in disallowed {
-            assert!(!adress_allowed(&ranges, &i));
-        }
-    }
+    ranges
 }
