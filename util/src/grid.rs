@@ -106,6 +106,10 @@ impl Bounds {
     pub fn from(x_values: Range<i32>, y_values: Range<i32>) -> Self {
         Bounds { x_values, y_values }
     }
+
+    pub fn contains(&self, coordinate: &Coordinate) -> bool {
+        self.x_values.contains(&coordinate.x) && self.y_values.contains(&coordinate.y)
+    }
 }
 
 /// Generate orthogonally adjacent coordinates to the given one.
