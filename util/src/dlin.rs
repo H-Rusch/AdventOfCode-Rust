@@ -1,9 +1,10 @@
 use dotenv::dotenv;
-use reqwest::header::COOKIE;
+use reqwest::header::{COOKIE, USER_AGENT};
 use std::{env, error, io, fs};
 use std::path::PathBuf;
 
 const INPUT_FOLDER: &str = "inputs";
+const USER_AGENT_HEADER_CONTENT: &str = "https://github.com/H-Rusch/AdventOfCode-Rust contact @ https://github.com/H-Rusch/AdventOfCode-Rust/issues/new";
 
 struct Config {
     pub year: String,
@@ -101,6 +102,7 @@ async fn make_request(config: &Config) -> Result<String, Box<dyn error::Error>> 
     let body = client
         .get(url)
         .header(COOKIE, format!("session={}", &config.session_cookie))
+        .header(USER_AGENT, USER_AGENT_HEADER_CONTENT)
         .send()
         .await?
         .text()
