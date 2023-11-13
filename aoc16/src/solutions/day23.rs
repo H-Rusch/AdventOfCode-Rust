@@ -3,6 +3,7 @@ use crate::solutions::computer::{Computer, Operation};
 pub fn part1(input: &str) -> i32 {
     let instructions = parse(input);
     let mut computer = Computer::new(instructions);
+    computer.insert("a".to_string(), 7);
     computer.run();
 
     computer.get("a").unwrap()
@@ -11,7 +12,7 @@ pub fn part1(input: &str) -> i32 {
 pub fn part2(input: &str) -> i32 {
     let instructions = parse(input);
     let mut computer = Computer::new(instructions);
-    computer.insert("c".to_string(), 1);
+    computer.insert("a".to_string(), 12);
     computer.run();
 
     computer.get("a").unwrap()
@@ -25,10 +26,10 @@ fn parse(input: &str) -> Vec<Operation> {
 mod tests {
     use super::*;
 
-    const INPUT: &str = include_str!("../../examples/day12.txt");
+    const INPUT: &str = include_str!("../../examples/day23.txt");
 
     #[test]
     fn part1_ex() {
-        assert_eq!(42, part1(INPUT));
+        assert_eq!(3, part1(INPUT));
     }
 }
