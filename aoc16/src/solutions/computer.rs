@@ -5,7 +5,9 @@ use itertools::Itertools;
 pub struct Computer {
     instructions: Vec<Operation>,
     registers: HashMap<String, i32>,
+    output: Vec<i32>,
     ic: usize,
+    halted: bool,
 }
 
 impl Computer {
@@ -13,7 +15,9 @@ impl Computer {
         Computer {
             instructions,
             registers: HashMap::new(),
+            output: Vec::from([1]), // initialize with first value to be able to acces at 2nd from the back after inserting immediately
             ic: 0,
+            halted: false,
         }
     }
 
@@ -27,16 +31,30 @@ impl Computer {
 
     pub fn run(&mut self) {
         while let Some(instruction) = self.instructions.get(self.ic) {
-            let offset = self.execute_instruction(&instruction.clone());
-            if offset < 0 {
-                self.ic -= offset.unsigned_abs() as usize;
-            } else {
-                self.ic += offset as usize;
-            }
+            self.execute(&instruction.clone());
         }
     }
 
-    pub fn execute_instruction(&mut self, instruction: &Operation) -> i32 {
+    pub fn run_to_output_length(&mut self, length: usize) -> bool {
+        while !self.halted && self.output.len() < length {
+            if let Some(instruction) = self.instructions.get(self.ic) {
+                self.execute(&instruction.clone());
+            }
+        }
+
+        self.check_output()
+    }
+
+    fn execute(&mut self, instruction: &Operation) {
+        let offset = self.execute_instruction(instruction);
+        if offset < 0 {
+            self.ic -= offset.unsigned_abs() as usize;
+        } else {
+            self.ic += offset as usize;
+        }
+    }
+
+    fn execute_instruction(&mut self, instruction: &Operation) -> i32 {
         match instruction {
             Operation::Cpy(x, y) => {
                 let value = self.get_immediate_or_register_value(x);
@@ -47,7 +65,6 @@ impl Computer {
             Operation::Inc(x) => *self.registers.entry(x.to_string()).or_default() += 1,
             Operation::Dec(x) => *self.registers.entry(x.to_string()).or_default() -= 1,
             Operation::Jnz(x, y) => {
-                // skip invalid instruction
                 if self.get_immediate_or_register_value(x) != 0 {
                     return self.get_immediate_or_register_value(y);
                 }
@@ -57,6 +74,14 @@ impl Computer {
                 if let Some(instr) = self.instructions.get((offset + self.ic as i32) as usize) {
                     let toggled = self.toggle(instr);
                     self.instructions[(offset + self.ic as i32) as usize] = toggled;
+                }
+            }
+            Operation::Out(x) => {
+                let value = self.get_immediate_or_register_value(x);
+                self.output.push(value);
+                let last_two = &self.output[(self.output.len() - 2)..];
+                if ![0, 1].contains(&value) || last_two[0] == last_two[1] {
+                    self.halted = true;
                 }
             }
         }
@@ -77,10 +102,15 @@ impl Computer {
     fn toggle(&self, operation: &Operation) -> Operation {
         match operation {
             Operation::Inc(x) => Operation::Dec(x.clone()),
-            Operation::Dec(x) | Operation::Tgl(x) => Operation::Inc(x.clone()),
+            Operation::Dec(x) | Operation::Tgl(x) | Operation::Out(x) => Operation::Inc(x.clone()),
             Operation::Jnz(x, y) => Operation::Cpy(x.clone(), y.to_string()),
             Operation::Cpy(x, y) => Operation::Jnz(x.clone(), y.clone()),
         }
+    }
+
+    fn check_output(&self) -> bool {
+        self.output.iter().all(|&n| n == 0 || n == 1)
+            && (1..self.output.len()).all(|i| self.output[i] != self.output[i - 1])
     }
 }
 
@@ -91,6 +121,7 @@ pub enum Operation {
     Dec(String),
     Jnz(String, String),
     Tgl(String),
+    Out(String),
 }
 
 impl Operation {
@@ -102,6 +133,7 @@ impl Operation {
             "dec" => Operation::Dec(parts[1].to_string()),
             "jnz" => Operation::Jnz(parts[1].to_string(), parts[2].parse().unwrap()),
             "tgl" => Operation::Tgl(parts[1].to_string()),
+            "out" => Operation::Out(parts[1].to_string()),
             _ => unreachable!(),
         }
     }
