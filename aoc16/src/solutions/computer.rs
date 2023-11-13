@@ -84,6 +84,12 @@ impl Computer {
                     self.halted = true;
                 }
             }
+            Operation::Mul(x, y, z) => {
+                let y: i32 = self.get_immediate_or_register_value(y);
+                let z: i32 = self.get_immediate_or_register_value(z);
+                self.registers.insert(x.to_string(), y * z);
+            }
+            Operation::Noop => {}
         }
         1
     }
@@ -105,6 +111,7 @@ impl Computer {
             Operation::Dec(x) | Operation::Tgl(x) | Operation::Out(x) => Operation::Inc(x.clone()),
             Operation::Jnz(x, y) => Operation::Cpy(x.clone(), y.to_string()),
             Operation::Cpy(x, y) => Operation::Jnz(x.clone(), y.clone()),
+            Operation::Noop | Operation::Mul(_, _, _) => unreachable!(),
         }
     }
 
@@ -122,6 +129,8 @@ pub enum Operation {
     Jnz(String, String),
     Tgl(String),
     Out(String),
+    Mul(String, String, String),
+    Noop,
 }
 
 impl Operation {
@@ -134,6 +143,12 @@ impl Operation {
             "jnz" => Operation::Jnz(parts[1].to_string(), parts[2].parse().unwrap()),
             "tgl" => Operation::Tgl(parts[1].to_string()),
             "out" => Operation::Out(parts[1].to_string()),
+            "mul" => Operation::Mul(
+                parts[1].to_string(),
+                parts[2].to_string(),
+                parts[3].to_string(),
+            ),
+            "noop" => Operation::Noop,
             _ => unreachable!(),
         }
     }
