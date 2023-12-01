@@ -61,18 +61,17 @@ fn get_captured_char(captures: &Captures) -> char {
 }
 
 pub fn part1(input: &str) -> u32 {
-    let finder = NumbersOnly;
-    input
-        .lines()
-        .map(|line| find_calibration_number(line, &finder).unwrap())
-        .sum()
+    sum_calibration_numbers(input, &NumbersOnly)
 }
 
 pub fn part2(input: &str) -> u32 {
-    let finder = NumbersAndSpelled;
+    sum_calibration_numbers(input, &NumbersAndSpelled)
+}
+
+fn sum_calibration_numbers(input: &str, finder: &impl FindDigit) -> u32 {
     input
         .lines()
-        .map(|line| find_calibration_number(line, &finder).unwrap())
+        .map(|line| find_calibration_number(line, finder).unwrap())
         .sum()
 }
 
