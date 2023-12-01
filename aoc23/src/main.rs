@@ -27,7 +27,7 @@ fn main() {
     let args: Vec<String> = env::args().collect();
     let day: u8 = args[1].clone().parse().unwrap();
 
-    let input = match util::dlin::read_input("aoc22", "2022", day) {
+    let input = match util::dlin::read_input("aoc23", "2023", day) {
         Ok(text) => text,
         Err(e) => {
             eprintln!("Error: {:?}", e);
@@ -36,6 +36,7 @@ fn main() {
     };
 
     match day {
+        1 => solve_day!(day01, &input),
         _ => println!("day not solved: {}", day),
     }
 }
