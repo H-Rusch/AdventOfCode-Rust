@@ -1,5 +1,5 @@
 use regex::Regex;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 #[derive(Clone)]
 struct Card {
@@ -29,21 +29,17 @@ pub fn part1(input: &str) -> usize {
 }
 
 pub fn part2(input: &str) -> usize {
-    let mut cards = parse(input);
+    let cards = parse(input);
+    let mut card_counts: HashMap<usize, usize> = cards.iter().map(|card| (card.id, 1)).collect();
 
-    let mut i = 0;
-    while i < cards.len() {
-        let card = &cards[i];
-
-        let cards_to_append: Vec<_> = (0..card.matching_count())
-            .map(|j| cards[card.id + j].clone())
-            .collect();
-        cards.extend(cards_to_append);
-
-        i += 1;
+    for card in cards {
+        let count = *card_counts.get(&card.id).unwrap();
+        for i in 1..=card.matching_count() {
+            *card_counts.entry(card.id + i).or_insert(1) += count;
+        }
     }
 
-    cards.len()
+    card_counts.values().sum()
 }
 
 fn parse(input: &str) -> Vec<Card> {
