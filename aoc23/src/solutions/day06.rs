@@ -1,5 +1,4 @@
 use itertools::Itertools;
-use rayon::prelude::*;
 
 pub fn part1(input: &str) -> usize {
     let (times, distances) = parse(input);
@@ -15,10 +14,11 @@ pub fn part2(input: &str) -> usize {
 }
 
 fn count_ways_to_win(total_time: usize, record: usize) -> usize {
-    (0..total_time)
-        .into_par_iter()
-        .filter(|charge_time| beats_record(total_time, *charge_time, record))
-        .count()
+    let (low, _) = (0..total_time).find_position(|charge_time| beats_record(total_time, *charge_time, record)).unwrap();
+    let (high, _) = (0..total_time).rev().find_position(|charge_time| beats_record(total_time, *charge_time, record)).unwrap();
+    let high = total_time - high;
+
+    low.abs_diff(high)
 }
 
 fn beats_record(total_time: usize, charge_time: usize, record: usize) -> bool {
