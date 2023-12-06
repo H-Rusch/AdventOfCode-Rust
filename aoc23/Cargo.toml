@@ -11,3 +11,4 @@ lazy_static = {workspace = true}
 regex = {workspace = true}
 fancy-regex = {workspace = true}
 rayon = {workspace = true}
+itertools = {workspace = true}
