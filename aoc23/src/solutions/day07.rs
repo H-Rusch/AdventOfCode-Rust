@@ -115,7 +115,7 @@ impl EvaluateCardValue for WildcardEvaluator {
     }
 }
 
-#[derive(Eq, PartialEq)]
+#[derive(Eq, PartialEq, Debug)]
 enum HandType {
     FiveOfAKind,
     FourOfAKind,
