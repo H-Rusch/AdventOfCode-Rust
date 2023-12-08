@@ -12,3 +12,4 @@ regex = {workspace = true}
 fancy-regex = {workspace = true}
 rayon = {workspace = true}
 itertools = {workspace = true}
+num = {workspace = true}
