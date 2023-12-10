@@ -72,16 +72,16 @@ fn next_direction(pipe: char, direction: Direction) -> Direction {
 }
 
 fn valid_directions(pipe: char, direction: &Direction) -> bool {
-    match (pipe, direction) {
-        ('|', Direction::Up | Direction::Down) => true,
-        ('-', Direction::Left | Direction::Right) => true,
-        ('L', Direction::Left | Direction::Down) => true,
-        ('J', Direction::Right | Direction::Down) => true,
-        ('7', Direction::Right | Direction::Up) => true,
-        ('F', Direction::Left | Direction::Up) => true,
-        ('S', _) => true,
-        _ => false,
-    }
+    matches!(
+        (pipe, direction),
+        ('|', Direction::Up | Direction::Down)
+            | ('-', Direction::Left | Direction::Right)
+            | ('L', Direction::Left | Direction::Down)
+            | ('J', Direction::Right | Direction::Down)
+            | ('7', Direction::Right | Direction::Up)
+            | ('F', Direction::Left | Direction::Up)
+            | ('S', _)
+    )
 }
 
 fn parse(input: &str) -> (HashMap<Coordinate, char>, Coordinate) {
