@@ -1,28 +1,33 @@
 use itertools::Itertools;
+use memoize::memoize;
 
 pub fn part1(input: &str) -> u64 {
-    let conditional_records = parse(input);
+    solve(parse(input))
+}
+
+pub fn part2(input: &str) -> u64 {
+    solve(parse_and_expand(input))
+}
+
+fn solve(conditional_records: Vec<(String, Vec<usize>)>) -> u64 {
     conditional_records
         .into_iter()
-        .map(|(row, rules)| count_arrangements(row, rules))
+        .map(|(springs, groups)| count_arrangements(&springs, groups))
         .sum()
 }
 
-pub fn part2(_input: &str) -> u64 {
-    0
-}
-
 fn count_arrangements(springs: &str, damaged_groups: Vec<usize>) -> u64 {
-    count_recursive(&springs.chars().collect_vec(), &damaged_groups)
+    count_recursive(springs.chars().collect_vec(), damaged_groups)
 }
 
-fn count_recursive(springs: &[char], damaged_groups: &[usize]) -> u64 {
+#[memoize]
+fn count_recursive(springs: Vec<char>, damaged_groups: Vec<usize>) -> u64 {
     if springs.is_empty() {
         return if damaged_groups.is_empty() { 1 } else { 0 };
     }
 
     match springs[0] {
-        '.' => count_recursive(&springs[1..], damaged_groups),
+        '.' => count_recursive(springs[1..].to_vec(), damaged_groups),
         '#' => {
             if damaged_groups.is_empty() {
                 return 0;
@@ -41,7 +46,7 @@ fn count_recursive(springs: &[char], damaged_groups: &[usize]) -> u64 {
                 return if new_groups.is_empty() { 1 } else { 0 };
             }
 
-            count_recursive(&springs[(group_size + 1)..], &new_groups)
+            count_recursive(springs[(group_size + 1)..].to_vec(), new_groups)
         }
         '?' => ['#', '.']
             .iter()
@@ -50,19 +55,35 @@ fn count_recursive(springs: &[char], damaged_groups: &[usize]) -> u64 {
                 replacement[0] = *ch;
                 replacement
             })
-            .map(|next_row| count_recursive(&next_row, damaged_groups))
+            .map(|next_row| count_recursive(next_row, damaged_groups.clone()))
             .sum(),
         _ => unreachable!(),
     }
 }
 
-fn parse(input: &str) -> Vec<(&str, Vec<usize>)> {
+fn parse(input: &str) -> Vec<(String, Vec<usize>)> {
     input
         .lines()
         .map(|line| {
-            let (row, rules) = line.split_once(' ').unwrap();
+            let (spring, rules) = line.split_once(' ').unwrap();
             let rules = rules.split(',').map(|n| n.parse().unwrap()).collect();
-            (row, rules)
+            (spring.to_string(), rules)
+        })
+        .collect()
+}
+
+fn parse_and_expand(input: &str) -> Vec<(String, Vec<usize>)> {
+    input
+        .lines()
+        .map(|line| {
+            let (spring, rules) = line.split_once(' ').unwrap();
+            let spring = std::iter::once(spring).cycle().take(5).join("?");
+
+            let rules: Vec<usize> = rules.split(',').map(|n| n.parse().unwrap()).collect();
+            let n = rules.len();
+            let rules = rules.into_iter().cycle().take(5 * n).collect();
+
+            (spring, rules)
         })
         .collect()
 }
@@ -89,5 +110,7 @@ mod tests {
     }
 
     #[test]
-    fn part2_ex() {}
+    fn part2_ex() {
+        assert_eq!(525152, part2(EXAMPLE));
+    }
 }
