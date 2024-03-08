@@ -1,8 +1,6 @@
-use std::collections::VecDeque;
-
 use itertools::Itertools;
 
-pub fn part1(input: &str) -> usize {
+pub fn part1(input: &str) -> u64 {
     let conditional_records = parse(input);
     conditional_records
         .into_iter()
@@ -14,55 +12,48 @@ pub fn part2(_input: &str) -> u64 {
     0
 }
 
-fn count_arrangements(row: &str, rules: Vec<usize>) -> usize {
-    generate_variations(row)
-        .iter()
-        .filter(|variation| check_variation(variation, &rules))
-        .count()
+fn count_arrangements(springs: &str, damaged_groups: Vec<usize>) -> u64 {
+    count_recursive(&springs.chars().collect_vec(), &damaged_groups)
 }
 
-fn generate_variations(row: &str) -> Vec<String> {
-    let mut queue: VecDeque<String> = VecDeque::from([row.to_owned()]);
-    let mut variations = Vec::new();
-
-    while let Some(row) = queue.pop_front() {
-        if let Some((operational, broken)) = perform_replacement(&row) {
-            queue.push_back(operational);
-            queue.push_back(broken);
-        } else {
-            variations.push(row);
-        }
+fn count_recursive(springs: &[char], damaged_groups: &[usize]) -> u64 {
+    if springs.is_empty() {
+        return if damaged_groups.is_empty() { 1 } else { 0 };
     }
 
-    variations
-}
+    match springs[0] {
+        '.' => count_recursive(&springs[1..], damaged_groups),
+        '#' => {
+            if damaged_groups.is_empty() {
+                return 0;
+            }
 
-fn perform_replacement(row: &str) -> Option<(String, String)> {
-    for (i, ch) in row.char_indices() {
-        if ch == '?' {
-            let mut replace_operational = row.chars().collect_vec();
-            replace_operational[i] = '.';
+            let group_size = damaged_groups[0];
+            if group_size > springs.len()
+                || springs.iter().take(group_size).any(|&ch| ch == '.')
+                || springs.iter().skip(group_size).take(1).any(|&ch| ch == '#')
+            {
+                return 0;
+            }
 
-            let mut replace_broken = row.chars().collect_vec();
-            replace_broken[i] = '#';
+            let new_groups = damaged_groups[1..].to_owned();
+            if group_size == springs.len() {
+                return if new_groups.is_empty() { 1 } else { 0 };
+            }
 
-            return Some((
-                replace_operational.iter().collect(),
-                replace_broken.iter().collect(),
-            ));
+            count_recursive(&springs[(group_size + 1)..], &new_groups)
         }
+        '?' => ['#', '.']
+            .iter()
+            .map(|ch| {
+                let mut replacement = springs.to_owned();
+                replacement[0] = *ch;
+                replacement
+            })
+            .map(|next_row| count_recursive(&next_row, damaged_groups))
+            .sum(),
+        _ => unreachable!(),
     }
-
-    None
-}
-
-fn check_variation(variation: &str, rules: &[usize]) -> bool {
-    let lengths = variation.split('.')
-        .map(|group| group.len())
-        .filter(|n| n != &0)
-        .collect_vec();
-
-    &lengths == rules
 }
 
 fn parse(input: &str) -> Vec<(&str, Vec<usize>)> {
@@ -81,20 +72,6 @@ mod tests {
     use super::*;
 
     const EXAMPLE: &str = include_str!("../../examples/day12.txt");
-
-    #[test]
-    fn generate_variations_test() {
-        assert_eq!(
-            vec!["...", "..#", ".#.", ".##", "#..", "#.#", "##.", "###"],
-            generate_variations("???")
-        );
-    }
-
-    #[test]
-    fn check_variation_test() {
-        assert!(check_variation("#.#.###", &vec![1, 1, 3]));
-        assert!(!check_variation("..#.###", &vec![1, 1, 3]));
-    }
 
     #[test]
     fn count_arrangements_test() {
