@@ -1,4 +1,3 @@
-#[derive(Debug)]
 struct Pattern {
     vertical_lines: Vec<String>,
     horizontal_lines: Vec<String>,
@@ -10,9 +9,17 @@ enum Reflection {
 }
 
 pub fn part1(input: &str) -> usize {
-    parse(input)
+    solve(&parse(input), 0)
+}
+
+pub fn part2(input: &str) -> usize {
+    solve(&parse(input), 1)
+}
+
+fn solve(patterns: &[Pattern], tolerance: usize) -> usize {
+    patterns
         .iter()
-        .map(find_reflection)
+        .map(|pattern| find_reflection(pattern, tolerance))
         .map(|reflection| match reflection {
             Some(Reflection::Vertical(x)) => x * 100,
             Some(Reflection::Horizontal(y)) => y,
@@ -21,32 +28,31 @@ pub fn part1(input: &str) -> usize {
         .sum()
 }
 
-pub fn part2(input: &str) -> usize {
-    0
+fn find_reflection(pattern: &Pattern, tolerance: usize) -> Option<Reflection> {
+    find_horizontal_reflection(&pattern.vertical_lines, tolerance)
+        .or_else(|| find_vertical_reflection(&pattern.horizontal_lines, tolerance))
 }
 
-fn find_reflection(pattern: &Pattern) -> Option<Reflection> {
-    find_horizontal_reflection(&pattern.vertical_lines)
-        .or_else(|| find_vertical_reflection(&pattern.horizontal_lines))
+fn find_horizontal_reflection(vertical_lines: &[String], tolerance: usize) -> Option<Reflection> {
+    find_reflection_index(vertical_lines, tolerance).map(Reflection::Horizontal)
 }
 
-fn find_horizontal_reflection(vertical_lines: &[String]) -> Option<Reflection> {
-    find_reflection_index(vertical_lines).map(Reflection::Horizontal)
+fn find_vertical_reflection(horizontal_lines: &[String], tolerance: usize) -> Option<Reflection> {
+    find_reflection_index(horizontal_lines, tolerance).map(Reflection::Vertical)
 }
 
-fn find_vertical_reflection(horizontal_lines: &[String]) -> Option<Reflection> {
-    find_reflection_index(horizontal_lines).map(Reflection::Vertical)
+fn find_reflection_index(lines: &[String], tolerance: usize) -> Option<usize> {
+    (1..lines.len()).find(|&i| is_symetrical(lines, i - 1, i, tolerance))
 }
 
-fn find_reflection_index(lines: &[String]) -> Option<usize> {
-    (1..lines.len()).find(|&i| lines[i - 1] == lines[i] && is_symetrical(lines, i - 1, i))
-}
-
-fn is_symetrical(lines: &[String], mut left: usize, mut right: usize) -> bool {
+fn is_symetrical(lines: &[String], mut left: usize, mut right: usize, tolerance: usize) -> bool {
+    let mut difference_count = 0;
     loop {
-        if lines[left] != lines[right] {
-            return false;
-        }
+        difference_count += lines[left]
+            .chars()
+            .zip(lines[right].chars())
+            .filter(|(ch1, ch2)| ch1 != ch2)
+            .count();
 
         if left == 0 || right == lines.len() - 1 {
             break;
@@ -56,7 +62,7 @@ fn is_symetrical(lines: &[String], mut left: usize, mut right: usize) -> bool {
         right += 1;
     }
 
-    true
+    tolerance == difference_count
 }
 
 fn parse(input: &str) -> Vec<Pattern> {
@@ -98,6 +104,6 @@ mod tests {
 
     #[test]
     fn part2_ex() {
-        assert_eq!(0, part2(EXAMPLE));
+        assert_eq!(400, part2(EXAMPLE));
     }
 }
