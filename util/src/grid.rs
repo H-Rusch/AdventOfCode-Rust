@@ -97,6 +97,7 @@ impl Coordinate {
     }
 }
 
+#[derive(Clone)]
 pub struct Bounds {
     x_values: Range<i32>,
     y_values: Range<i32>,
@@ -109,6 +110,20 @@ impl Bounds {
 
     pub fn contains(&self, coordinate: &Coordinate) -> bool {
         self.x_values.contains(&coordinate.x) && self.y_values.contains(&coordinate.y)
+    }
+
+    pub fn width(&self) -> usize {
+        self.x_values.start.abs_diff(self.x_values.end) as usize
+    }
+
+    pub fn height(&self) -> usize {
+        self.y_values.start.abs_diff(self.y_values.end) as usize
+    }
+
+    pub fn coordinates(&self) -> impl Iterator<Item = Coordinate> + '_ {
+        self.y_values
+            .clone()
+            .flat_map(|y| self.x_values.clone().map(move |x| Coordinate::from(x, y)))
     }
 }
 
@@ -255,5 +270,32 @@ mod tests {
         assert!(next.is_none());
         let next = coordinate.step_in_bounds(&Direction::Left, 2, &bounds);
         assert!(next.is_none());
+    }
+
+    #[test]
+    fn bound_returns_correct_width() {
+        for (expected_width, x_values) in [(3, 0..3), (5, -2..3), (0, 2..2)] {
+            let bounds = Bounds::from(x_values, 0..0);
+
+            assert_eq!(expected_width, bounds.width());
+        }
+    }
+
+    #[test]
+    fn bound_returns_correct_height() {
+        for (expected_height, y_values) in [(3, 0..3), (5, -2..3), (0, 2..2)] {
+            let bounds = Bounds::from(0..0, y_values);
+
+            assert_eq!(expected_height, bounds.height());
+        }
+    }
+
+    #[test]
+    fn bound_returns_all_contained_coordinates() {
+        let bounds = Bounds::from(1..3, 5..7);
+        let expected_coordinates = [(1, 5), (2, 5), (1, 6), (2, 6)]
+            .map(|(x, y)| Coordinate::from(x, y))
+            .to_vec();
+        assert_eq!(expected_coordinates, bounds.coordinates().collect::<Vec<_>>());
     }
 }
