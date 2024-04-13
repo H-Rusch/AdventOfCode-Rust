@@ -1,6 +1,6 @@
 use std::ops::Range;
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
 pub enum Direction {
     Right,
     Up,
@@ -44,6 +44,16 @@ impl Direction {
             Direction::Up => Self::Down,
             Direction::Down => Self::Up,
         }
+    }
+
+    pub fn iter() -> impl Iterator<Item = Direction> {
+        [
+            Direction::Right,
+            Direction::Up,
+            Direction::Left,
+            Direction::Down,
+        ]
+        .into_iter()
     }
 }
 
@@ -296,6 +306,9 @@ mod tests {
         let expected_coordinates = [(1, 5), (2, 5), (1, 6), (2, 6)]
             .map(|(x, y)| Coordinate::from(x, y))
             .to_vec();
-        assert_eq!(expected_coordinates, bounds.coordinates().collect::<Vec<_>>());
+        assert_eq!(
+            expected_coordinates,
+            bounds.coordinates().collect::<Vec<_>>()
+        );
     }
 }
