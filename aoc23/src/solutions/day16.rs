@@ -56,29 +56,14 @@ fn simulate_light(
 }
 
 fn change_direction(direction: &Direction, tile: char) -> Vec<Direction> {
-    match tile {
-        '/' => vec![match direction {
-            Direction::Up => Direction::Right,
-            Direction::Down => Direction::Left,
-            Direction::Right => Direction::Up,
-            Direction::Left => Direction::Down,
-        }],
-        '\\' => vec![match direction {
-            Direction::Up => Direction::Left,
-            Direction::Down => Direction::Right,
-            Direction::Right => Direction::Down,
-            Direction::Left => Direction::Up,
-        }],
-        '-' => match direction {
-            Direction::Left | Direction::Right => vec![*direction],
-            Direction::Up | Direction::Down => vec![Direction::Right, Direction::Left],
-        },
-        '|' => match direction {
-            Direction::Left | Direction::Right => vec![Direction::Up, Direction::Down],
-            Direction::Up | Direction::Down => vec![*direction],
-        },
-        '.' => vec![*direction],
-        _ => unreachable!(),
+    match (tile, direction) {
+        ('/', Direction::Up | Direction::Down) => vec![direction.right()],
+        ('/', Direction::Left | Direction::Right) => vec![direction.left()],
+        ('\\', Direction::Up | Direction::Down) => vec![direction.left()],
+        ('\\', Direction::Left | Direction::Right) => vec![direction.right()],
+        ('-', Direction::Up | Direction::Down) => vec![direction.right(), direction.left()],
+        ('|', Direction::Right | Direction::Left) => vec![direction.right(), direction.left()],
+        _ => vec![*direction],
     }
 }
 

@@ -20,7 +20,11 @@ impl Direction {
     }
 
     pub fn turn_right(&mut self) {
-        *self = match self {
+        *self = self.right();
+    }
+
+    pub fn right(&self) -> Self {
+        match self {
             Direction::Right => Self::Down,
             Direction::Down => Self::Left,
             Direction::Left => Self::Up,
@@ -29,7 +33,11 @@ impl Direction {
     }
 
     pub fn turn_left(&mut self) {
-        *self = match self {
+        *self = self.left();
+    }
+
+    pub fn left(&self) -> Self {
+        match self {
             Direction::Right => Self::Up,
             Direction::Up => Self::Left,
             Direction::Left => Self::Down,
@@ -38,7 +46,11 @@ impl Direction {
     }
 
     pub fn turn_around(&mut self) {
-        *self = match self {
+        *self = self.back();
+    }
+
+    pub fn back(&self) -> Self {
+        match self {
             Direction::Right => Self::Left,
             Direction::Left => Self::Right,
             Direction::Up => Self::Down,
