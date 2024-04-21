@@ -11,7 +11,7 @@ enum Tile {
 pub fn part1(input: &str) -> usize {
     let mut tiles = parse(input);
     // y-coordinate for the wall the furthest down from the top.
-    let y_cutoff = tiles.keys().max_by_key(|(_, y | y)| *y).unwrap().1;
+    let y_cutoff = tiles.keys().max_by_key(|(_, y)| *y).unwrap().1;
 
     fill_with_sand1(&mut tiles, y_cutoff);
 
@@ -23,7 +23,7 @@ pub fn part1(input: &str) -> usize {
 
 pub fn part2(input: &str) -> usize {
     let mut tiles = parse(input);
-    let bottom = tiles.keys().max_by_key(|(_, y | y)| *y).unwrap().1 + 2;
+    let bottom = tiles.keys().max_by_key(|(_, y)| *y).unwrap().1 + 2;
 
     fill_with_sand2(&mut tiles, bottom);
 
@@ -69,7 +69,7 @@ fn fill_with_sand2(tiles: &mut HashMap<(i32, i32), Tile>, bottom: i32) {
     }
 }
 
-/// check down, digonal left and diagonal right. If any of those coordinates is empty, this will be the next 
+/// check down, digonal left and diagonal right. If any of those coordinates is empty, this will be the next
 /// coordinate of the tile of sand in which case this coordinate is returned in a Some.
 /// But if none of those is empty, the sand should not change position which is represennted by a returned None.
 fn next_coordinate(x: i32, y: i32, tiles: &HashMap<(i32, i32), Tile>) -> Option<(i32, i32)> {
