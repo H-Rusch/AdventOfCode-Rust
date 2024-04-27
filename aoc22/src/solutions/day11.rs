@@ -81,7 +81,7 @@ pub fn part2(input: &str) -> usize {
     calc_monkey_business(&mut monkeys)
 }
 
-fn perform_iteration(limit: usize, monkeys: &Vec<Monkey>) {
+fn perform_iteration(limit: usize, monkeys: &[Monkey]) {
     for _ in 0..limit {
         for i in 0..monkeys.len() {
             monkeys[i].execute_turn(monkeys);

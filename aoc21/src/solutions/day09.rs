@@ -20,7 +20,7 @@ pub fn part2(input: &str) -> u32 {
         .product()
 }
 
-fn calculate_basin_area(x: usize, y: usize, grid: &Vec<Vec<u32>>) -> u32 {
+fn calculate_basin_area(x: usize, y: usize, grid: &[Vec<u32>]) -> u32 {
     let height = grid.len();
     let width = grid[0].len();
 
@@ -45,7 +45,7 @@ fn calculate_basin_area(x: usize, y: usize, grid: &Vec<Vec<u32>>) -> u32 {
     area
 }
 
-fn find_low_points(grid: &Vec<Vec<u32>>) -> Vec<(usize, usize)> {
+fn find_low_points(grid: &[Vec<u32>]) -> Vec<(usize, usize)> {
     let height = grid.len();
     let width = grid[0].len();
 

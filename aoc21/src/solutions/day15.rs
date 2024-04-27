@@ -34,7 +34,7 @@ pub fn part2(input: &str) -> u32 {
     lowest_risk(&grid, (grid[0].len() - 1, grid.len() - 1))
 }
 
-fn lowest_risk(grid: &Vec<Vec<u32>>, goal: (usize, usize)) -> u32 {
+fn lowest_risk(grid: &[Vec<u32>], goal: (usize, usize)) -> u32 {
     let height = grid.len();
     let width = grid[0].len();
     let mut heap = BinaryHeap::new();

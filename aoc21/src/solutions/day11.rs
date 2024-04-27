@@ -26,7 +26,7 @@ pub fn part2(input: &str) -> usize {
 }
 
 // change matrix in place and return number of flashes
-fn step(matrix: &mut Vec<Vec<u8>>) -> usize {
+fn step(matrix: &mut [Vec<u8>]) -> usize {
     let width = matrix[0].len();
     let height = matrix.len();
 

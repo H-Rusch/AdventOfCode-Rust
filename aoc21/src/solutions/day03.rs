@@ -48,11 +48,11 @@ fn convert_to_int(v: &Vec<u8>) -> u32 {
     num
 }
 
-fn least_common_at(list: &Vec<Vec<u8>>, pos: usize) -> u8 {
+fn least_common_at(list: &[Vec<u8>], pos: usize) -> u8 {
     (most_common_at(list, pos) + 1) % 2
 }
 
-fn most_common_at(list: &Vec<Vec<u8>>, pos: usize) -> u8 {
+fn most_common_at(list: &[Vec<u8>], pos: usize) -> u8 {
     let count = list.iter()
         .map(|l| l[pos])
         .filter(|&b| b == 1)

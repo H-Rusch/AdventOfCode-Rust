@@ -29,19 +29,13 @@ impl FindDigit for NumbersAndSpelled {
     fn find_first_digit(&self, line: &str) -> Option<char> {
         let mut matches = DIGIT_OR_SPELLED.captures_iter(line);
 
-        let Some(captures) = matches.next() else {
-            return None;
-        };
-        Some(get_captured_char(&captures.unwrap()))
+        Some(get_captured_char(&matches.next()?.unwrap()))
     }
 
     fn find_last_digit(&self, line: &str) -> Option<char> {
         let matches = DIGIT_OR_SPELLED.captures_iter(line);
 
-        let Some(captures) = matches.last() else {
-            return None;
-        };
-        Some(get_captured_char(&captures.unwrap()))
+        Some(get_captured_char(&matches.last()?.unwrap()))
     }
 }
 

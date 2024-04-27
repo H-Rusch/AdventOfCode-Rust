@@ -68,7 +68,7 @@ fn calculate_area(polygon: &[Coordinate]) -> usize {
     // Calculate the area of the polygon with the Shoelace formula (https://en.wikipedia.org/wiki/Shoelace_formula).
 
     let first_edge = [polygon[0]];
-    let polygon = polygon.into_iter().chain(first_edge.iter()).collect_vec();
+    let polygon = polygon.iter().chain(first_edge.iter()).collect_vec();
 
     let area: i64 = polygon
         .iter()
@@ -103,7 +103,7 @@ fn parse_extracted_instruction(line: &str) -> Instruction {
 
     let steps =
         u32::from_str_radix(hex_code.chars().take(5).collect::<String>().as_str(), 16).unwrap();
-    let direction = match hex_code.chars().skip(5).next().unwrap() {
+    let direction = match hex_code.chars().nth(5).unwrap() {
         '0' => Direction::Right,
         '1' => Direction::Down,
         '2' => Direction::Left,
