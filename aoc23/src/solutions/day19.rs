@@ -1,6 +1,6 @@
 use lazy_static::lazy_static;
 use regex::{Match, Regex};
-use std::collections::HashMap;
+use std::{collections::HashMap, ops::Range};
 
 lazy_static! {
     static ref OPERATION_REGEX: Regex = Regex::new(r"^([xmas])[<>](\d+):(.*)$").unwrap();
@@ -64,6 +64,58 @@ impl Part {
     }
 }
 
+#[derive(Clone, Debug)]
+struct PartRanges {
+    x: Range<usize>,
+    m: Range<usize>,
+    a: Range<usize>,
+    s: Range<usize>,
+}
+
+impl PartRanges {
+    const LIMIT: usize = 4001;
+
+    fn default() -> Self {
+        PartRanges {
+            x: 1..PartRanges::LIMIT,
+            m: 1..PartRanges::LIMIT,
+            a: 1..PartRanges::LIMIT,
+            s: 1..PartRanges::LIMIT,
+        }
+    }
+
+    fn split(&self, field: char, value: usize) -> (Self, Self) {
+        let mut lower = self.clone();
+        let mut higher = self.clone();
+
+        match field {
+            'x' => {
+                lower.x = lower.x.start..value;
+                higher.x = value..higher.x.end;
+            }
+            'm' => {
+                lower.m = lower.m.start..value;
+                higher.m = value..higher.m.end;
+            }
+            'a' => {
+                lower.a = lower.a.start..value;
+                higher.a = value..higher.a.end;
+            }
+            's' => {
+                lower.s = lower.s.start..value;
+                higher.s = value..higher.s.end;
+            }
+            _ => unreachable!(),
+        }
+
+        (lower, higher)
+    }
+
+    fn score(&self) -> usize {
+        self.x.len() * self.m.len() * self.a.len() * self.s.len()
+    }
+}
+
 pub fn part1(input: &str) -> usize {
     let (workflows, parts) = parse(input);
 
@@ -74,8 +126,54 @@ pub fn part1(input: &str) -> usize {
         .sum()
 }
 
-pub fn part2(_input: &str) -> usize {
-    0
+pub fn part2(input: &str) -> usize {
+    let (workflows, _) = parse(input);
+
+    let mut accepted = Vec::new();
+    get_valid_ranges(PartRanges::default(), &workflows, "in", &mut accepted);
+
+    accepted.iter().map(PartRanges::score).sum()
+}
+
+fn get_valid_ranges(
+    range: PartRanges,
+    workflows: &HashMap<String, Vec<Rule>>,
+    workflow: &str,
+    accepted: &mut Vec<PartRanges>,
+) {
+    let mut current = range;
+    for rule in workflows.get(workflow).unwrap() {
+        match rule {
+            Rule::GT(field, value, op) => {
+                let (disallowed, allowed) = current.split(*field, value + 1);
+                current = disallowed;
+
+                evaluate_op(allowed, workflows, op, accepted);
+            }
+            Rule::LT(field, value, op) => {
+                let (allowed, disallowed) = current.split(*field, *value);
+                current = disallowed;
+
+                evaluate_op(allowed, workflows, op, accepted);
+            }
+            Rule::Unconditional(op) => {
+                evaluate_op(current.clone(), workflows, op, accepted);
+            }
+        }
+    }
+}
+
+fn evaluate_op(
+    range: PartRanges,
+    workflows: &HashMap<String, Vec<Rule>>,
+    op: &Operation,
+    accepted: &mut Vec<PartRanges>,
+) {
+    match op {
+        Operation::Reject => (),
+        Operation::Accept => accepted.push(range),
+        Operation::Call(other) => get_valid_ranges(range, workflows, other, accepted),
+    }
 }
 
 fn is_part_accepted(part: &Part, workflows: &HashMap<String, Vec<Rule>>, workflow: &str) -> bool {
@@ -188,6 +286,6 @@ mod tests {
 
     #[test]
     fn part2_ex() {
-        assert_eq!(0, part2(EXAMPLE));
+        assert_eq!(167_409_079_868_000, part2(EXAMPLE));
     }
 }
