@@ -18,3 +18,4 @@ https://github.com/H-Rusch/AdventOfCode-Rust contact @ https://github.com/H-Rusc
 - [2016](https://adventofcode.com/2016)
 - [2021](https://adventofcode.com/2021)
 - [2022](https://adventofcode.com/2022)
+- [2023](https://adventofcode.com/2023)
