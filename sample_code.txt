@@ -14,16 +14,15 @@ fn parse(input: &str) {
 mod tests {
     use super::*;
 
-    const INPUT: &str = "\
-";
+    const EXAMPLE: &str = include_str!("");
 
     #[test]
     fn part1_ex() {
-        assert_eq!(0, part1(INPUT));
+        assert_eq!(0, part1(EXAMPLE));
     }
 
     #[test]
     fn part2_ex() {
-        assert_eq!(0, part2(INPUT));
+        assert_eq!(0, part2(EXAMPLE));
     }
 }
