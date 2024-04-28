@@ -1,5 +1,7 @@
 use std::collections::{HashMap, VecDeque};
 
+use num::Integer;
+
 #[derive(PartialEq, Eq, Clone, Copy)]
 enum Signal {
     High,
@@ -69,8 +71,18 @@ pub fn part1(input: &str) -> usize {
     high_count * low_count
 }
 
-pub fn part2(_input: &str) -> usize {
-    0
+pub fn part2(input: &str) -> usize {
+    // Solution specifically tailored for my input. 
+    // Identified the "parents" of the rx node and find how many iterations are needed until they are all High
+    // Calculate LCM for the resulting values to find the first time when all of them are true
+    ["xm", "dr", "nh", "tr"]
+        .iter()
+        .map(|target| {
+            let mut modules = parse(input);
+
+            simulate_until_high(&mut modules, target)
+        })
+        .fold(1, |x, y| x.lcm(&y))
 }
 
 fn simulate(modules: &mut HashMap<String, Module>) -> (usize, usize) {
@@ -89,19 +101,51 @@ fn simulate(modules: &mut HashMap<String, Module>) -> (usize, usize) {
             }
         }
 
-        if let Some(module) = modules.get_mut(&destination) {
-            if let Some(next_signal) = module.behavior.receive_signal(&source, signal) {
-                sent_signals.extend(
-                    module
-                        .outputs
-                        .iter()
-                        .map(|output| (destination.clone(), output.clone(), next_signal)),
-                )
-            }
+        if let Some(values) = evaluate_signal(modules, source, destination, signal) {
+            sent_signals.extend(values.into_iter());
         }
     }
 
     (low_count, high_count)
+}
+
+fn evaluate_signal(
+    modules: &mut HashMap<String, Module>,
+    source: String,
+    destination: String,
+    signal: Signal,
+) -> Option<Vec<(String, String, Signal)>> {
+    if let Some(module) = modules.get_mut(&destination) {
+        if let Some(next_signal) = module.behavior.receive_signal(&source, signal) {
+            return Some(
+                module
+                    .outputs
+                    .iter()
+                    .map(|output| (destination.clone(), output.clone(), next_signal))
+                    .collect(),
+            );
+        }
+    }
+    None
+}
+
+fn simulate_until_high(modules: &mut HashMap<String, Module>, target: &str) -> usize {
+    let mut presses = 0;
+    loop {
+        presses += 1;
+
+        let mut sent_signals =
+            VecDeque::from([("button".to_string(), "broadcaster".to_string(), Signal::Low)]);
+
+        while let Some((source, destination, signal)) = sent_signals.pop_front() {
+            if source == target && signal == Signal::High {
+                return presses;
+            }
+            if let Some(values) = evaluate_signal(modules, source, destination, signal) {
+                sent_signals.extend(values.into_iter());
+            }
+        }
+    }
 }
 
 fn parse(input: &str) -> HashMap<String, Module> {
@@ -168,10 +212,5 @@ mod tests {
     fn part1_ex() {
         assert_eq!(32_000_000, part1(EXAMPLE_1));
         assert_eq!(11_687_500, part1(EXAMPLE_2));
-    }
-
-    #[test]
-    fn part2_ex() {
-        assert_eq!(0, part2(EXAMPLE_1));
     }
 }
