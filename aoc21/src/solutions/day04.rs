@@ -65,8 +65,7 @@ impl Board {
             // check columns
             for x in 0..self.guessed.len() {
                 let result = self.guessed.iter()
-                    .map(|r| r[x])
-                    .all(|b| b);
+                    .all(|r| r[x]);
                 if result {
                     return true;
                 }

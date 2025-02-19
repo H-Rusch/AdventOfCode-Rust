@@ -48,7 +48,7 @@ fn parse(input: &str) -> Vec<i32> {
     // Idea taken from: https://www.reddit.com/r/adventofcode/comments/zhjfo4/2022_day_10_solutions/izmspl7/ 
     input
         .split_whitespace()
-        .map(|element| if let Ok(v) = element.parse() { v } else { 0 })
+        .map(|element| element.parse().unwrap_or_default())
         .collect()
 }
 
