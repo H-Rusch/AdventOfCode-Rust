@@ -11,10 +11,10 @@ pub enum Direction {
 impl Direction {
     pub fn from(c: char) -> Self {
         match c.to_ascii_uppercase() {
-            'R' => Direction::Right,
-            'U' => Direction::Up,
-            'L' => Direction::Left,
-            'D' => Direction::Down,
+            'R' | '>' => Direction::Right,
+            'U' | '^' => Direction::Up,
+            'L' | '<' => Direction::Left,
+            'D' | 'V' => Direction::Down,
             _ => unreachable!(),
         }
     }
