@@ -132,9 +132,12 @@ fn find_longest_path(
         }
         path.insert(current);
 
-        for (next, additional_length) in condensed_graph.get(&current).unwrap() {
-            stack.push((*next, length + additional_length, path.clone()));
-        }
+        condensed_graph.get(&current).unwrap()
+            .iter()
+            .filter(|(next, _)| next != &current)
+            .for_each(|(next, additional_length)| {
+                stack.push((*next, length + additional_length, path.clone()));
+            });
     }
 
     best
@@ -177,7 +180,6 @@ fn walk_paths(current: &Coordinate, adjacent_strategy: &dyn Adjacent) -> Vec<(Co
         .collect();
     let mut visited = HashSet::from([*current]);
     let mut results = Vec::new();
-    let previous = current;
 
     while let Some((current, length)) = stack.pop() {
         if visited.contains(&current) {
@@ -187,9 +189,7 @@ fn walk_paths(current: &Coordinate, adjacent_strategy: &dyn Adjacent) -> Vec<(Co
 
         let adjacent = adjacent_strategy.get_adjacent(&current);
         if adjacent.len() != 2 {
-            if current != *previous {
-                results.push((current, length));
-            }
+            results.push((current, length));
             continue;
         }
 
